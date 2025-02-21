@@ -71,6 +71,19 @@ EaComponents.ApplicationWindow {
         },
         // Project page
 
+        // Experiment page
+        EaElements.AppBarTabButton {
+            id: experimentButton
+            enabled: false
+            fontIcon: 'microscope'
+            text: qsTr('Experiment')
+            ToolTip.text: qsTr('Experimental data page')
+            Component.onCompleted: {
+                Globals.References.applicationWindow.appBarCentralTabs.experimentButton = experimentButton
+            }
+        },
+        // Experiment page
+
         // Summary page
         EaElements.AppBarTabButton {
             id: summaryButton
@@ -93,6 +106,7 @@ EaComponents.ApplicationWindow {
     contentArea: [
         Loader { source: 'Pages/Home/Content.qml' },
         Loader { source: 'Pages/Project/Layout.qml' },
+        Loader { source: 'Pages/Experiment/Layout.qml' },
         Loader { source: 'Pages/Report/Layout.qml' }
     ]
 

@@ -57,6 +57,13 @@ QtObject {
     function projectEditInfo(path, new_value) { activeBackend.project.editInfo(path, new_value) }
 
     ///////////////
+    // Experiment page
+    ///////////////
+
+    property bool experimentCreated: activeBackend.report.created
+    onExperimentCreatedChanged: activeBackend.report.created = experimentCreated
+
+    ///////////////
     // Summary page
     ///////////////
 
