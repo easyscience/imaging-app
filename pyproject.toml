@@ -1,9 +1,10 @@
+# This pyproject.toml file is not meant to be distributed, but is for development purposes only. Install it with 'pip install -e .'
 [build-system]
 requires = ['hatchling']
 build-backend = 'hatchling.build'
 
 [project]
-name = 'easyimaging'
+name = 'EasyImagingApp'
 version = '1.0.0'
 description = 'Example of a desktop application of advanced complexity with Python backend and EasyApp-based GUI'
 authors = [
@@ -18,7 +19,8 @@ classifiers = [
 ]
 requires-python = '>=3.11'
 dependencies = [
-  'numpy<2'
+  'EasyApp @ git+https://github.com/EasyScience/EasyApp.git@master',
+  'toml',
 ]
 
 [project.optional-dependencies]
@@ -30,6 +32,10 @@ ci = [
 
 [project.urls]
 homepage = 'https://github.com/EasyScience/imaging-app'
+
+# To allow dependencies residing in git 
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ['EasyImagingApp']

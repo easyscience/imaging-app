@@ -13,8 +13,8 @@ from PySide6.QtCore import qInstallMessageHandler
 # If this is not the case, and if the example is run from the EasyApp repository, one need to add the path to the
 # EasyApp source code.
 CURRENT_DIR = Path(__file__).parent  # path to qml components of the current project
-EASYAPP_DIR = CURRENT_DIR / '..' / '..' / '..' / '..' / 'src'  # path to qml components of the easyapp module
-sys.path.append(str(EASYAPP_DIR))
+#EASYAPP_DIR = CURRENT_DIR / '..' / '..' / 'EasyApp' / 'src'  # path to qml components of the easyapp module
+#sys.path.append(str(EASYAPP_DIR))
 
 from EasyApp.Logic.Logging import console
 
@@ -28,7 +28,10 @@ if __name__ == '__main__':
     # This singleton object will be accessible in QML as follows:
     # import Backends 1.0 as Backends OR import Backends as Backends
     # property var activeBackend: Backends.PyBackend
-    qmlRegisterSingletonType(Backend, 'Backends', 1, 0, 'PyBackend')
+    ### ------------------------------------------------------------###
+    # Commen out the following line to use the MockBackend
+    ### ------------------------------------------------------------###
+    # qmlRegisterSingletonType(Backend, 'Backends', 1, 0, 'PyBackend')
     console.debug('Backend class is registered as a singleton type for QML')
 
     app = QGuiApplication(sys.argv)
@@ -38,7 +41,8 @@ if __name__ == '__main__':
     console.debug(f'QML application engine created {engine}')
 
     engine.addImportPath(CURRENT_DIR)
-    engine.addImportPath(EASYAPP_DIR)
+    engine.addImportPath(CURRENT_DIR / '..' / '..' / 'EasyApp' / 'src')
+    #engine.addImportPath(EASYAPP_DIR)
     console.debug('Paths added where QML searches for components')
 
     engine.load(CURRENT_DIR / 'main.qml')
