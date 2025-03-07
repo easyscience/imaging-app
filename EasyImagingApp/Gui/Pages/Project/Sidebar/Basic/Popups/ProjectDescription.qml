@@ -23,7 +23,7 @@ EaComponents.ProjectDescriptionDialog {
         Globals.BackendWrapper.projectName = projectName
         Globals.BackendWrapper.projectEditInfo('description', projectDescription)
         Globals.BackendWrapper.projectCreate()
-        Globals.References.applicationWindow.appBarCentralTabs.summaryButton.enabled = true
+        Globals.References.applicationWindow.appBarCentralTabs.experimentButton.enabled = true
     }
 
     Component.onCompleted: {

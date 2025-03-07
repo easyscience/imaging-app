@@ -55,6 +55,7 @@ QtObject {
     function projectCreate() { activeBackend.project.create() }
     function projectSave() { activeBackend.project.save() }
     function projectEditInfo(path, new_value) { activeBackend.project.editInfo(path, new_value) }
+    function projectLoad(file_path) { activeBackend.project.load(file_path) }
 
     ///////////////
     // Experiment page

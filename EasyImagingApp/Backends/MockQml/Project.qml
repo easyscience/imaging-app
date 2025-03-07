@@ -12,7 +12,7 @@ QtObject {
 
     property string name: ''
 
-    readonly property var info: {
+    property var info: {
         'description': '',
         'location': '',
         'creationDate': ''
@@ -39,6 +39,12 @@ QtObject {
 
     function editInfo(path, new_value) {
         console.debug(`NOT IMPLEMENTED: Changing project info.${path} from '${info.path}' to '${new_value}'`)
+    }
+
+    function load(file_path) {
+        console.debug(`Loading project from '${file_path}'`)
+        info.creationDate = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+        created = true
     }
 
 }

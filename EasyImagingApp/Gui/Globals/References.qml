@@ -28,7 +28,7 @@ QtObject {
             'sidebar': {
                 'basic': {
                     'popups': {
-                        'openCifFile': null
+                        'openTiffFileDialog': null
                     }
                 }
             }

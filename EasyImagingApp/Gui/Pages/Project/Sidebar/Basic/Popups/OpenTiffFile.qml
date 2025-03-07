@@ -14,17 +14,18 @@ import Gui.Globals as Globals
 
 FileDialog{
 
-    id: openCifFileDialog
+    id: openTiffFileDialog
 
     fileMode: FileDialog.OpenFile
-    nameFilters: [ 'CIF files (*.cif)']
+    nameFilters: [ 'TIFF files (*.tiff)']
 
     onAccepted: {
         Globals.References.applicationWindow.appBarCentralTabs.summaryButton.enabled = true
+        Globals.BackendWrapper.projectLoad(selectedFile)
     }
 
     Component.onCompleted: {
-        Globals.References.pages.project.sidebar.basic.popups.openCifFile = openCifFileDialog
+        Globals.References.pages.project.sidebar.basic.popups.openTiffFileDialog = openTiffFileDialog
     }
 
 }

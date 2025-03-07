@@ -4,6 +4,7 @@
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 import EasyApp.Gui.Style as EaStyle
 import EasyApp.Gui.Animations as EaAnimations
@@ -11,46 +12,39 @@ import EasyApp.Gui.Elements as EaElements
 
 import Gui.Globals as Globals
 
+import Qt.labs.platform as Platform
+
 
 Rectangle {
 
-    color: EaStyle.Colors.textViewBackground
+    color: EaStyle.Colors.mainContentBackground
     Behavior on color { EaAnimations.ThemeChange {} }
 
-    // Flickable
-    Flickable {
-        id: flick
-
+    RowLayout{
+        id: mainLayout
         anchors.fill: parent
+        spacing: 0
 
-        contentWidth: textArea.contentWidth
-        contentHeight: textArea.contentHeight
-
-        clip: true
-        flickableDirection: Flickable.VerticalFlick
-
-        ScrollBar.vertical: EaElements.ScrollBar {
-            policy: ScrollBar.AsNeeded
-            interactive: false
+        Image {
+            id: imageviewer
+            fillMode: Image.PreserveAspectFit
+            asynchronous: true
         }
 
-        // Main text area
-        EaElements.TextArea {
-            id: textArea
-
-            readOnly: true
-
-            width: flick.width
-            topPadding: 0
-            bottomPadding: 0
-            padding: 2.5 * EaStyle.Sizes.fontPixelSize
-
-            textFormat: TextEdit.RichText
-            text: Globals.BackendWrapper.reportAsHtml
+        ToolButton {
+            text: qsTr("Open")
+            icon.name: "document-open"
+            onClicked: fileOpenDialog.open()
         }
-        // Main text area
 
+        Platform.FileDialog {
+            id: fileOpenDialog
+            title: "Select an image"
+            folder: StandardPaths.writeableLocation(StandardPaths.DocumentsLocation)
+            onAccepted: {
+                imageviewer.source = fileOpenDialog.fileUrl
+            }
+        }
     }
-    // Flickable
 
 }

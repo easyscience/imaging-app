@@ -18,7 +18,7 @@
         "EasyImagingApp/Gui/Pages/Project/Sidebar/Basic/Groups/Examples.qml",
         "EasyImagingApp/Gui/Pages/Project/Sidebar/Basic/Groups/GetStarted.qml",
         "EasyImagingApp/Gui/Pages/Project/Sidebar/Basic/Groups/Recent.qml",
-        "EasyImagingApp/Gui/Pages/Project/Sidebar/Basic/Popups/OpenCifFile.qml",
+        "EasyImagingApp/Gui/Pages/Project/Sidebar/Basic/Popups/OpenTiffFile.qml",
         "EasyImagingApp/Gui/Pages/Project/Sidebar/Basic/Popups/ProjectDescription.qml",
         "EasyImagingApp/Gui/Pages/Project/Sidebar/Extra/Layout.qml",
         "EasyImagingApp/Gui/Pages/Project/Sidebar/Extra/Groups/Scrolling.qml",
