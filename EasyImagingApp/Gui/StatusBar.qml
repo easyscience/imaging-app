@@ -32,9 +32,9 @@ EaElements.StatusBar {
 
     EaElements.StatusBarItem {
         keyIcon: 'microscope'
-        keyText: qsTr('Experiments')
-        valueText: Globals.BackendWrapper.statusExperimentsCount
-        ToolTip.text: qsTr('Number of experiments added')
+        keyText: qsTr('Measurements')
+        valueText: Globals.BackendWrapper.statusMeasurementsCount
+        ToolTip.text: qsTr('Number of measurements added')
     }
 
     EaElements.StatusBarItem {

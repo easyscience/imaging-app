@@ -6,16 +6,14 @@ pragma Singleton
 
 import QtQuick
 
-import Backends.MockQml as MockLogic
-
-
 QtObject {
+    property bool created: false
 
-    property var project: MockLogic.Project
-    property var status: MockLogic.Status
-    property var measurement: MockLogic.Measurement
-    property var report: MockLogic.Report
+
+    // Setters
+    function load(path) {
+        console.debug('Loading measurement from ${path}')
+    }
+
 
 }
-
-

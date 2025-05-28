@@ -8,7 +8,7 @@ from PySide6.QtCore import QObject, Signal, Property
 class Status(QObject):
     projectChanged = Signal()
     phasesCountChanged = Signal()
-    experimentsCountChanged = Signal()
+    measurementsCountChanged = Signal()
     calculatorChanged = Signal()
     minimizerChanged = Signal()
     variablesChanged = Signal()
@@ -17,7 +17,7 @@ class Status(QObject):
         super().__init__()
         self._project = 'Undefined'
         self._phasesCount = '1'
-        self._experimentsCount = '1'
+        self._measurementsCount = '1'
         self._calculator = 'CrysPy'
         self._minimizer = 'Lmfit (leastsq)'
         self._variables = '31 (3 free, 28 fixed)'
@@ -48,16 +48,16 @@ class Status(QObject):
         self._phasesCount = new_value
         self.phasesCountChanged.emit()
 
-    @Property(str, notify=experimentsCountChanged)
-    def experimentsCount(self):
-        return self._experimentsCount
+    @Property(str, notify=measurementsCountChanged)
+    def measurementsCount(self):
+        return self._measurementsCount
 
-    @experimentsCount.setter
-    def experimentsCount(self, new_value):
-        if self._experimentsCount == new_value:
+    @measurementsCount.setter
+    def measurementsCount(self, new_value):
+        if self._measurementsCount == new_value:
             return
-        self._experimentsCount = new_value
-        self.experimentsCountChanged.emit()
+        self._measurementsCount = new_value
+        self.measurementsCountChanged.emit()
 
     @Property(str, notify=calculatorChanged)
     def calculator(self):

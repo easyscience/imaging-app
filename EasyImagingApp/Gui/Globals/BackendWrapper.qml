@@ -35,7 +35,7 @@ QtObject {
 
     readonly property string statusProject: activeBackend.status.project
     readonly property string statusPhasesCount: activeBackend.status.phasesCount
-    readonly property string statusExperimentsCount: activeBackend.status.experimentsCount
+    readonly property string statusMeasurementsCount: activeBackend.status.measurementsCount
     readonly property string statusCalculator: activeBackend.status.calculator
     readonly property string statusMinimizer: activeBackend.status.minimizer
     readonly property string statusVariables: activeBackend.status.variables
@@ -58,11 +58,13 @@ QtObject {
     function projectLoad(file_path) { activeBackend.project.load(file_path) }
 
     ///////////////
-    // Experiment page
+    // Measurement page
     ///////////////
 
-    property bool experimentCreated: activeBackend.report.created
-    onExperimentCreatedChanged: activeBackend.report.created = experimentCreated
+    property bool measurementCreated: activeBackend.report.created
+    onMeasurementCreatedChanged: activeBackend.report.created = measurementCreated
+
+    function measurementLoad(value) {activeBackend.measurement.load(value)}
 
     ///////////////
     // Summary page

@@ -17,7 +17,7 @@ QtObject {
         'appBarCentralTabs': {
             'homeButton': null,
             'projectButton': null,
-            'experimentButton': null,
+            'measurementButton': null,
             'summaryButton': null,
         }
     }
@@ -32,7 +32,19 @@ QtObject {
                     }
                 }
             }
-        }
+        },
+        'measurement':{
+            'mainContent': {
+                'measurementView': null,
+            },
+            'sidebar': {
+                'basic': {
+                    'popups': {
+                        'openMeasurementFileDialog': null,
+                    }
+                }
+            }
+        },
     }
 
 }

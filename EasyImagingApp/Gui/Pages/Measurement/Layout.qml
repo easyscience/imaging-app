@@ -17,11 +17,11 @@ EaComponents.ContentPage {
 
     defaultInfo: Globals.BackendWrapper.reportCreated ?
                      '' :
-                     qsTr('No Summary Generated')
+                     qsTr('No Measurement Loaded Yet')
 
     mainView: EaComponents.MainContent {
         tabs: [
-            EaElements.TabButton { text: qsTr('Summary') }
+            EaElements.TabButton { text: qsTr('Measurements') }
         ]
 
         items: [
@@ -48,7 +48,7 @@ EaComponents.ContentPage {
         }
     }
 
-    Component.onCompleted: console.debug(`Experiment page loaded ::: ${this}`)
-    Component.onDestruction: console.debug(`Experiment page destroyed ::: ${this}`)
+    Component.onCompleted: console.debug(`Measurements page loaded ::: ${this}`)
+    Component.onDestruction: console.debug(`Measurements page destroyed ::: ${this}`)
 
 }

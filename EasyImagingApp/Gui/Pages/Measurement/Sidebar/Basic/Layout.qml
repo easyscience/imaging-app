@@ -13,12 +13,12 @@ import Gui.Globals as Globals
 EaComponents.SideBarColumn {
 
     EaElements.GroupBox {
-        enabled: false
-        title: qsTr('Export summary')
-        icon: 'download'
+        enabled: true
+        title: qsTr('Measurements')
+        icon: 'microscope'
         collapsed: false
 
-        Loader { source: 'Groups/Export.qml' }
+        Loader { source: 'Groups/ImportMeasurement.qml' }
     }
 
 }
