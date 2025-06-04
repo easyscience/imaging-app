@@ -7,13 +7,10 @@ pragma Singleton
 import QtQuick
 
 QtObject {
-    property bool created: false
-
 
     // Setters
     function load(path) {
         console.debug('Loading measurement from ${path}')
     }
-
 
 }

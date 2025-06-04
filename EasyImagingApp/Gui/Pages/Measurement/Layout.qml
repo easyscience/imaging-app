@@ -15,17 +15,17 @@ import Gui.Globals as Globals
 
 EaComponents.ContentPage {
 
-    defaultInfo: Globals.BackendWrapper.reportCreated ?
-                     '' :
-                     qsTr('No Measurement Loaded Yet')
+    // defaultInfo: Globals.BackendWrapper.reportCreated ?
+    //                  '' :
+    //                  qsTr('No measurement loaded yet')
 
     mainView: EaComponents.MainContent {
         tabs: [
-            EaElements.TabButton { text: qsTr('Measurements') }
+            EaElements.TabButton { text: qsTr('ROI view') }
         ]
 
         items: [
-            Loader { source: 'MainArea/Summary.qml' }
+            Loader { source: 'MainArea/MeasurementView.qml' }
         ]
     }
 

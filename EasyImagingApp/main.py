@@ -5,6 +5,8 @@
 from pathlib import Path
 import sys
 
+import numpy as np
+
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterSingletonType
 from PySide6.QtCore import qInstallMessageHandler
@@ -17,7 +19,7 @@ CURRENT_DIR = Path(__file__).parent  # path to qml components of the current pro
 #sys.path.append(str(EASYAPP_DIR))
 
 from EasyApp.Logic.Logging import console
-
+from imageprovider import EasyImageProvider
 from Backends.real_backend import Backend
 
 
@@ -31,7 +33,7 @@ if __name__ == '__main__':
     ### ------------------------------------------------------------###
     # Commen out the following line to use the MockBackend
     ### ------------------------------------------------------------###
-    # qmlRegisterSingletonType(Backend, 'Backends', 1, 0, 'PyBackend')
+    qmlRegisterSingletonType(Backend, 'Backends', 1, 0, 'PyBackend')
     console.debug('Backend class is registered as a singleton type for QML')
 
     app = QGuiApplication(sys.argv)
@@ -44,6 +46,45 @@ if __name__ == '__main__':
     engine.addImportPath(CURRENT_DIR / '..' / '..' / 'EasyApp' / 'src')
     #engine.addImportPath(EASYAPP_DIR)
     console.debug('Paths added where QML searches for components')
+
+    # Add the image provider to the engine
+    image_provider = EasyImageProvider('easyimage')
+    engine.addImageProvider('easyimage', image_provider)
+
+    image_provider.addOrUpdateLayer(
+        "unique_image_id",
+        np.array(
+            [
+                [
+                    [255],
+                    [200],
+                ],
+                [
+                    [50],
+                    [0],
+                ]
+            ],
+            dtype=np.uint8,
+        ),
+    )
+
+    image_provider.addOrUpdateLayer(
+        "other_id",
+        np.array(
+            [
+                [
+                    [255, 0, 245],
+                ],
+                [
+                    [155, 0, 145],
+                ],
+                [
+                    [0, 0, 0],
+                ],
+            ],
+            dtype=np.uint8,
+        ),
+    )
 
     engine.load(CURRENT_DIR / 'main.qml')
     console.debug('Main QML component loaded')

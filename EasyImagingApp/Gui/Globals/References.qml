@@ -35,7 +35,7 @@ QtObject {
         },
         'measurement':{
             'mainContent': {
-                'measurementView': null,
+                'measurementViewer': null,
             },
             'sidebar': {
                 'basic': {

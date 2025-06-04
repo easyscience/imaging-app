@@ -96,38 +96,44 @@ Column {
     // Table
 
     // Control buttons below table
-    Row {
-        spacing: EaStyle.Sizes.fontPixelSize
-
-        EaElements.SideBarButton {
-            enabled: true
-            wide: true
-            fontIcon: "upload"
-            text: qsTr("Import Scitiff")
-            onClicked: {
-                console.debug(`Clicking '${text}' button: ${this}`)
-                Globals.References.pages.measurement.sidebar.basic.popups.openMeasurementFileDialog.open()
-            }
-
-            Loader {
-                source: '../Popups/OpenMeasurementFile.qml'
-            }
-
-            Component.onCompleted: Globals.Refs.app.measurementPage.importDataFromLocalDriveButton = this
+    EaElements.SideBarButton {
+        enabled: true
+        wide: true
+        fontIcon: "upload"
+        text: qsTr("Import Scitiff")
+        onClicked: {
+            console.debug(`Clicking '${text}' button: ${this}`)
+            Globals.References.pages.measurement.sidebar.basic.popups.openMeasurementFileDialog.open()
         }
+
+        Loader {
+            source: '../Popups/OpenMeasurementFile.qml'
+        }
+
     }
     // Control buttons below table
 
-    // Misc
-
-    FileDialog{
-        id: openCifFileDialog
-        fileMode: FileDialog.OpenFiles
-        nameFilters: [ "CIF files (*.cif)", "ASCII data files - 3 columns (*.xye *.xys *.dat)", "ASCII data files - 2 columns (*.xy *.dat)"]
-        onAccepted: {
-            console.debug('*** Loading measurement(s) from file(s) ***')
-            Globals.Proxies.main.measurement.loadMeasurementsFromFiles(selectedFiles)
+     EaElements.SideBarButton {
+        enabled: true
+        wide: true
+        text: qsTr("First source")
+        onClicked: {
+            console.debug(`Clicking '${text}' button: ${this}`)
+            Globals.References.pages.measurement.mainContent.measurementViewer.source = "image://easyimage/unique_image_id"
         }
-    }
+
+    }  
+
+     EaElements.SideBarButton {
+        enabled: true
+        wide: true
+        text: qsTr("Second source")
+        onClicked: {
+            console.debug(`Clicking '${text}' button: ${this}`)
+            Globals.References.pages.measurement.mainContent.measurementViewer.source = "image://easyimage/other_id"
+        }
+
+    }  
+
 
 }
