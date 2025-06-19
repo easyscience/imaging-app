@@ -32,4 +32,4 @@ Image {
 //     Behavior on color { EaAnimations.ThemeChange {} }
 // }
 
-
+// "image://easyimage/"

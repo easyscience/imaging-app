@@ -11,7 +11,7 @@ import QtQuick
 // If ‘PyBackend’ is not defined, then 'MockBackend' from directory 'Backends' is used.
 // It is needed to run the GUI frontend via the qml runtime tool without any Python backend.
 import Backends as Backends
-
+import Gui.Globals as Globals
 
 QtObject {
 
@@ -64,7 +64,10 @@ QtObject {
     property bool measurementCreated: activeBackend.report.created
     onMeasurementCreatedChanged: activeBackend.report.created = measurementCreated
 
-    function measurementLoad(value) {activeBackend.measurement.load(value)}
+    property string activeMeasurement: activeBackend.measurements.activeMeasurement
+    onActiveMeasurementChanged: Globals.References.pages.measurement.mainContent.measurementViewer.source = activeBackend.measurements.activeMeasurement
+
+    function measurementLoad(value) {activeBackend.measurements.load(value)}
 
     ///////////////
     // Summary page

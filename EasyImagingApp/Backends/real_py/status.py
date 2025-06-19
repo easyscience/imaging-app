@@ -3,7 +3,7 @@
 # © 2024 Contributors to the EasyApp project <https://github.com/easyscience/EasyApp>
 
 from PySide6.QtCore import QObject, Signal, Property
-
+from .temp.project import Project as ProjectLib
 
 class Status(QObject):
     projectChanged = Signal()
@@ -13,12 +13,12 @@ class Status(QObject):
     minimizerChanged = Signal()
     variablesChanged = Signal()
 
-    def __init__(self):
+    def __init__(self, project_lib : ProjectLib):
         super().__init__()
         self._project = 'Undefined'
-        self._phasesCount = '1'
-        self._measurementsCount = '1'
-        self._calculator = 'CrysPy'
+        self._phasesCount = '0'
+        self._measurementsCount = '0'
+        self._calculator = 'NCrystal'
         self._minimizer = 'Lmfit (leastsq)'
         self._variables = '31 (3 free, 28 fixed)'
 

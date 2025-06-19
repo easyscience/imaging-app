@@ -19,7 +19,7 @@ CURRENT_DIR = Path(__file__).parent  # path to qml components of the current pro
 #sys.path.append(str(EASYAPP_DIR))
 
 from EasyApp.Logic.Logging import console
-from imageprovider import EasyImageProvider
+from Backends.imageprovider import EasyImageProvider
 from Backends.real_backend import Backend
 
 
@@ -48,15 +48,15 @@ if __name__ == '__main__':
     console.debug('Paths added where QML searches for components')
 
     # Add the image provider to the engine
-    image_provider = EasyImageProvider('easyimage')
-    engine.addImageProvider('easyimage', image_provider)
+    image_provider = EasyImageProvider()
+    engine.addImageProvider(image_provider.name, image_provider)
 
     image_provider.addOrUpdateLayer(
         "unique_image_id",
         np.array(
             [
                 [
-                    [255],
+                    [65535],
                     [200],
                 ],
                 [
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                     [0],
                 ]
             ],
-            dtype=np.uint8,
+            dtype=np.uint16,
         ),
     )
 
@@ -73,16 +73,15 @@ if __name__ == '__main__':
         np.array(
             [
                 [
-                    [255, 0, 245],
+                    [65535],
+                    [45535],
                 ],
                 [
-                    [155, 0, 145],
-                ],
-                [
-                    [0, 0, 0],
-                ],
+                    [25535],
+                    [0],
+                ]
             ],
-            dtype=np.uint8,
+            dtype=np.uint16,
         ),
     )
 

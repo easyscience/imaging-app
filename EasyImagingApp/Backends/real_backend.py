@@ -9,20 +9,26 @@ from EasyApp.Logic.Logging import LoggerLevelHandler
 from .real_py.project import Project
 from .real_py.status import Status
 from .real_py.report import Report
+from .real_py.measurements import Measurements
+from .real_py.temp.project import Project as ProjectLib
 
 
 class Backend(QObject):
     def __init__(self):
         super().__init__()
 
+        # Instantiate the easyscience Project class.
+        self._project_lib = ProjectLib()
+
         ####################
         # Private attributes
         ####################
 
         # Individual Backend objects
-        self._project = Project()
-        self._status = Status()
-        self._report = Report()
+        self._project = Project(self._project_lib)
+        self._status = Status(self._project_lib)
+        self._report = Report(self._project_lib)
+        self._measurements = Measurements(self._project_lib)
 
         # Logger
         self._logger = LoggerLevelHandler(self)
@@ -39,6 +45,9 @@ class Backend(QObject):
         self._project.nameChanged.connect(self.onProjectNameChanged)
         self._project.createdChanged.connect(self.onProjectCreatedChanged)
 
+        # Measurements
+        #self._measurements.activeMeasurementChanged.connect()
+
     ##########################
     # GUI accessible variables
     ##########################
@@ -54,6 +63,10 @@ class Backend(QObject):
     @Property('QVariant', constant=True)
     def report(self):
         return self._report
+    
+    @Property('QVariant', constant=True)
+    def measurements(self):
+        return self._measurements
 
     ##################################
     # Functions related to connections

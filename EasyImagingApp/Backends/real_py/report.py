@@ -3,7 +3,7 @@
 # © 2024 Contributors to the EasyApp project <https://github.com/easyscience/EasyApp>
 
 from PySide6.QtCore import QObject, Signal, Property
-
+from .temp.project import Project as ProjectLib
 
 _HTML = """<!DOCTYPE html>
 <html>
@@ -79,7 +79,7 @@ class Report(QObject):
     createdChanged = Signal()
     asHtmlChanged = Signal()
 
-    def __init__(self):
+    def __init__(self, project_lib : ProjectLib):
         super().__init__()
         self._created = False
         self._asHtml = _HTML

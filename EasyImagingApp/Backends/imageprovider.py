@@ -2,14 +2,14 @@ from PySide6.QtQuick import QQuickImageProvider
 import numpy as np
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QImage
+from easyscience.utils.classUtils import singleton
 
-
-
+@singleton
 class EasyImageProvider(QQuickImageProvider):
-    def __init__(self, image_provider_id: str):
+    def __init__(self):
         super().__init__(QQuickImageProvider.ImageType.Image)
  
-        self.provider_id = image_provider_id
+        self.name = 'easyimage'
 
         """Image provider data."""
         self._images: dict[str, np.ndarray] = dict()
@@ -49,7 +49,7 @@ class EasyImageProvider(QQuickImageProvider):
                 _pixels.data,
                 width,
                 height,
-                QImage.Format_Grayscale8,
+                QImage.Format_Grayscale16,
             )
     
             return img
