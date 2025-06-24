@@ -1,11 +1,12 @@
 from ...imageprovider import EasyImageProvider
 import numpy as np
 from ..temp.project import Project as ProjectLib
+from EasyApp.Logic.Logging import console
 
 class Project():
     def __init__(self, project_lib: ProjectLib):
         self._project_lib = project_lib
-        self._active_measurement = 'unique_image_id'
+        self._active_measurement = None
 
         # This class is a singleton, so it can be accessed globally
         self._image_provider = EasyImageProvider()
@@ -13,8 +14,9 @@ class Project():
     def add_measurement_from_file(self, file_path: str) -> None:
         """Create a new measurement from a file and add it to the project."""
         self._project_lib.add_measurement_from_file(file_path)
-        name = list(self._project_lib.get_measurements())[-1]
-        data_array = self._project_lib.get_measurements()[name].data_array
+        measurement = self._project_lib.get_measurements()[-1]
+        data_array = measurement.data_array
+        name = measurement.name
         # Rescale and add the measurement image to the image provider
         image = data_array['image']['c', 0].values
         image = np.sum(image, axis=0)
@@ -32,6 +34,19 @@ class Project():
         """Clear all measurements from the project."""
         self._project_lib.clear_measurements()
 
+    def remove_measurement(self, index: int) -> None:
+        """Remove a measurement from the project by index."""
+        measurement = self._project_lib.get_measurements().pop(index)
+        name = measurement.name
+        self._image_provider.removeLayer(name)
+        if name == self._active_measurement:
+            self._active_measurement = self.get_measurements()[0].name if self.get_measurements() else None
+        console.debug(f"Measurement '{name}' removed from the project.")
+
+    def get_measurements_as_list_of_dicts(self) -> list[dict[str, str]]:
+        """Get the list of measurements as a list of dictionaries."""
+        return [{'name': m.name} for m in self._project_lib.get_measurements()]
+
     @property
     def active_measurement(self):
         """Get the active measurement."""
@@ -40,7 +55,8 @@ class Project():
     @active_measurement.setter
     def active_measurement(self, name: str):
         """Set the active measurement."""
-        if name in self._project_lib.get_measurements():
+        names = [m.name for m in self._project_lib.get_measurements()]
+        if name in names:
             self._active_measurement = name
         else:
-            raise ValueError(f"Measurement '{name}' does not exist in the project.")
+            raise ValueError(f"Measurement '{name}' not found in the project.")

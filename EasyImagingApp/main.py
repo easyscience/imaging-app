@@ -51,40 +51,6 @@ if __name__ == '__main__':
     image_provider = EasyImageProvider()
     engine.addImageProvider(image_provider.name, image_provider)
 
-    image_provider.addOrUpdateLayer(
-        "unique_image_id",
-        np.array(
-            [
-                [
-                    [65535],
-                    [200],
-                ],
-                [
-                    [50],
-                    [0],
-                ]
-            ],
-            dtype=np.uint16,
-        ),
-    )
-
-    image_provider.addOrUpdateLayer(
-        "other_id",
-        np.array(
-            [
-                [
-                    [65535],
-                    [45535],
-                ],
-                [
-                    [25535],
-                    [0],
-                ]
-            ],
-            dtype=np.uint16,
-        ),
-    )
-
     engine.load(CURRENT_DIR / 'main.qml')
     console.debug('Main QML component loaded')
 

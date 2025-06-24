@@ -12,7 +12,7 @@ readonly property var activeBackend: {
     }
 }
 ```
-For each property in the backend, a corresponding property in the QML BackendWrapper is created. Note that when a property is changed in the backend, the corresponding QML property also needs to be updated:
+For each QT property in the backend, a corresponding property in the QML BackendWrapper is created and linked to the property in the backend. This ensures that when the backend property is updated, the update is propagated to QML.
 ```c++
 property bool projectCreated: activeBackend.project.created
 onProjectCreatedChanged: activeBackend.project.created = projectCreated

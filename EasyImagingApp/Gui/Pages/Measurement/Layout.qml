@@ -15,9 +15,9 @@ import Gui.Globals as Globals
 
 EaComponents.ContentPage {
 
-    // defaultInfo: Globals.BackendWrapper.reportCreated ?
-    //                  '' :
-    //                  qsTr('No measurement loaded yet')
+    defaultInfo: Globals.BackendWrapper.measurementCreated ?
+                     '' :
+                     qsTr('No measurements imported yet')
 
     mainView: EaComponents.MainContent {
         tabs: [

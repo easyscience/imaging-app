@@ -21,17 +21,16 @@ Column {
 
     // Table
     EaComponents.TableView {
-        id: tableView
+        id: measurementsTable
 
-        property int measurementCurrentIndex: Globals.Proxies.main.measurement.currentIndex
+        // property int measurementCurrentIndex: Globals.Proxies.main.measurement.currentIndex
 
         defaultInfoText: qsTr("No measurements imported")
 
         maxRowCountShow: 5
-        onMeasurementCurrentIndexChanged: currentIndex = Globals.Proxies.main.measurement.currentIndex
 
         // Table model
-        model: Globals.Proxies.main.measurement.dataBlocksNoMeas
+        model: Globals.BackendWrapper.measurementsList
 
         // Header row
         header: EaComponents.TableViewHeader {
@@ -63,7 +62,7 @@ Column {
 
         // Table rows
         delegate: EaComponents.TableViewDelegate {
-            mouseArea.onPressed: Globals.Proxies.main.measurement.currentIndex = tableView.currentIndex
+            // mouseArea.onPressed: Globals.Proxies.main.measurement.currentIndex = tableView.currentIndex
 
             EaComponents.TableViewLabel {
                 enabled: false
@@ -72,24 +71,24 @@ Column {
 
             EaComponents.TableViewButton {
                 fontIcon: "microscope"
-                ToolTip.text: qsTr("Measured pattern color")
                 backgroundColor: "transparent"
                 borderColor: "transparent"
                 iconColor: EaStyle.Colors.chartForegroundsExtra[2]
             }
 
-            EaComponents.TableViewParameter {
-                selected: index === Globals.Proxies.main.measurement.currentIndex
-                text: tableView.model[index].name.value
+            EaComponents.TableViewTextInput {
+                text: tableView.model[index].name
             }
 
             EaComponents.TableViewButton {
-                enabled: false
                 fontIcon: "minus-circle"
-                ToolTip.text: qsTr("Remove this dataset")
-                onClicked: Globals.Proxies.main.measurement.removeMeasurement(index)
+                ToolTip.text: qsTr("Remove this measurement")
+                onClicked: Globals.BackendWrapper.measurementRemove(index)
             }
-
+            mouseArea.onPressed: {
+                console.debug(`Changing active measurement to: ${tableView.model[index].name}`)
+                Globals.BackendWrapper.changeActiveMeasurement(tableView.model[index].name)
+            }
         }
         // Table rows
     }
@@ -112,28 +111,5 @@ Column {
 
     }
     // Control buttons below table
-
-     EaElements.SideBarButton {
-        enabled: true
-        wide: true
-        text: qsTr("First source")
-        onClicked: {
-            console.debug(`Clicking '${text}' button: ${this}`)
-            Globals.References.pages.measurement.mainContent.measurementViewer.source = "image://easyimage/unique_image_id"
-        }
-
-    }  
-
-     EaElements.SideBarButton {
-        enabled: true
-        wide: true
-        text: qsTr("Second source")
-        onClicked: {
-            console.debug(`Clicking '${text}' button: ${this}`)
-            Globals.References.pages.measurement.mainContent.measurementViewer.source = "image://easyimage/other_id"
-        }
-
-    }  
-
 
 }

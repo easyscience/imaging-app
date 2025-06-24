@@ -61,13 +61,18 @@ QtObject {
     // Measurement page
     ///////////////
 
-    property bool measurementCreated: activeBackend.report.created
-    onMeasurementCreatedChanged: activeBackend.report.created = measurementCreated
+    readonly property bool measurementCreated: activeBackend.measurements.measurementCreated
+    // onMeasurementCreatedChanged: activeBackend.measurements.measurementCreated = measurementCreated
 
-    property string activeMeasurement: activeBackend.measurements.activeMeasurement
-    onActiveMeasurementChanged: Globals.References.pages.measurement.mainContent.measurementViewer.source = activeBackend.measurements.activeMeasurement
+    readonly property string activeMeasurement: activeBackend.measurements.activeMeasurement
+    // onActiveMeasurementChanged: Globals.References.pages.measurement.mainContent.measurementViewer.source = activeBackend.measurements.activeMeasurement
 
-    function measurementLoad(value) {activeBackend.measurements.load(value)}
+    readonly property var measurementsList: activeBackend.measurements.measurementsList
+    // onMeasurementsListChanged: activeBackend.measurements.measurementsList = measurementsList
+
+    function changeActiveMeasurement(string) { activeBackend.measurements.changeActiveMeasurement(string) }
+    function measurementLoad(string) {activeBackend.measurements.load(string)}
+    function measurementRemove(index) { activeBackend.measurements.removeMeasurement(index) }
 
     ///////////////
     // Summary page

@@ -16,3 +16,8 @@ class Measurement:
     def data_array(self) -> DataArray:
         """Get the data array of the measurement."""
         return self._data_array
+    
+    @property
+    def name(self) -> str:
+        """Get the name of the measurement."""
+        return self._name

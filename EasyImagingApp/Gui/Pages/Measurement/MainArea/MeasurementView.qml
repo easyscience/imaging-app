@@ -17,9 +17,10 @@ Image {
     id: measurementViewer
     anchors.fill: parent
     fillMode: Image.PreserveAspectFit
+    cache: false
     smooth: false
     asynchronous: true
-    source: "image://easyimage/unique_image_id"
+    source: Globals.BackendWrapper.activeMeasurement
     Component.onCompleted: {
         Globals.References.pages.measurement.mainContent.measurementViewer = measurementViewer
     }

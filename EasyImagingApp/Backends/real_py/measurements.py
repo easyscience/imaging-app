@@ -13,6 +13,8 @@ from .temp.project import Project as ProjectLib
 
 class Measurements(QObject):
     activeMeasurementChanged = Signal()
+    measurementListChanged = Signal()
+    measurementCreatedChanged = Signal()
 
     def __init__(self, project_lib: ProjectLib):
         super().__init__()
@@ -30,19 +32,26 @@ class Measurements(QObject):
         Returns the name of the active measurement in the image provider.
         This is used in the QML code to display the image.
         """
-        return 'image://easyimage/' + self._project_logic.active_measurement
+        if self._project_logic.active_measurement:
+            return 'image://easyimage/' + self._project_logic.active_measurement
+
+    @Property(bool, notify=measurementCreatedChanged)
+    def measurementCreated(self) -> bool:
+        """
+        Returns True if any measurement has been created.
+        """
+        if not self._project_logic.get_measurements():
+            return False
+        return True
+
+    @Property('QVariantList', notify=measurementListChanged)
+    def measurementsList(self) -> list[dict[str, str]]:
+        """
+        Returns the list of measurements in the image provider.
+        This is used in the QML code to display the list of measurements.
+        """
+        return self._project_logic.get_measurements_as_list_of_dicts()
     
-    @activeMeasurement.setter
-    def activeMeasurement(self, new_value):
-        """
-        Sets the name of the active measurement in the image provider.
-        This is used in the QML code to display the image.
-        """
-        if self._project_logic.active_measurement == new_value:
-            return
-        console.debug(IO.format_msg('main', f"Changing active measurement from '{self.activeMeasurement}' to '{new_value}'"))
-        self._project_logic.active_measurement = new_value
-        self.activeMeasurementChanged.emit()
 
     ##########################
     # GUI accessible functions
@@ -53,8 +62,28 @@ class Measurements(QObject):
     def load(self, path: str) -> None:
         self._project_logic.add_measurement_from_file(file_path=IO.generalizePath(path))
         self.activeMeasurementChanged.emit()
+        self.measurementListChanged.emit()
+        self.measurementCreatedChanged.emit()
 
-    # @Slot('QVariant')
-    # def setImageSource(self, source: QObject):
-    #     source.setPath("image://easyimage/unique_image_id")
-    #     #source."image://easyimage/unique_image_id"
+    @Slot(str)
+    def changeActiveMeasurement(self, name: str) -> None:
+        """
+        Changes the active measurement in the image provider.
+        The name is the name of the measurement in the list of measurements.
+        """
+        self._project_logic.active_measurement = name
+        self.activeMeasurementChanged.emit()
+        console.debug(IO.format_msg('main', f"Active measurement changed to '{name}'."))
+
+    @Slot(int)
+    def removeMeasurement(self, index: int) -> None:
+        """
+        Removes a measurement from the project.
+        The index is the index of the measurement in the list of measurements.
+        """
+        self._project_logic.remove_measurement(index)
+        self.measurementListChanged.emit()
+        self.activeMeasurementChanged.emit()
+        self.measurementCreatedChanged.emit()
+        console.debug(IO.format_msg('main', f"Measurement at index {index} removed."))
+

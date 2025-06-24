@@ -73,3 +73,7 @@ class EasyImageProvider(QQuickImageProvider):
     def removeLayer(self, layer_id: str) -> None:
         """Apply key-value pair deletion logic"""
         del self._images[layer_id]
+
+    def getLayers(self) -> list[str]:
+        """Return the list of layer ids."""
+        return list(self._images.keys())
