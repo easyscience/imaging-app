@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # © 2024 Contributors to the EasyApp project <https://github.com/easyscience/EasyApp>
 
-from pathlib import Path
 from PySide6.QtCore import QObject, Signal, Slot, Property
+from PySide6.QtGraphs import QLineSeries, QPointFList
+import numpy as np
 
 from EasyApp.Logic.Logging import console
 from .logic.helpers import IO
-from .logic.helpers import DottyDict
 from .logic.project import Project as ProjectLogic
 from .temp.project import Project as ProjectLib
 
@@ -15,6 +15,10 @@ class Measurements(QObject):
     activeMeasurementChanged = Signal()
     measurementListChanged = Signal()
     measurementCreatedChanged = Signal()
+    imageSourceChanged = Signal()
+    timeBinsChanged = Signal()
+    timeFrameChanged = Signal()
+    ROIListChanged = Signal()
 
     def __init__(self, project_lib: ProjectLib):
         super().__init__()
@@ -26,6 +30,15 @@ class Measurements(QObject):
 
     # Properties
 
+    @Property(str, notify=imageSourceChanged)
+    def imageSource(self) -> str:
+        """
+        Returns the image source for the image provider.
+        This is used in the QML code to display the image.
+        """
+        if self._project_logic.active_measurement:
+            return 'image://easyimage/' + self._project_logic.active_measurement + '_' + str(self._project_logic.time_frame)
+
     @Property(str, notify=activeMeasurementChanged)
     def activeMeasurement(self):
         """
@@ -33,7 +46,43 @@ class Measurements(QObject):
         This is used in the QML code to display the image.
         """
         if self._project_logic.active_measurement:
-            return 'image://easyimage/' + self._project_logic.active_measurement
+            return self._project_logic.active_measurement
+        
+    @Property(int, notify=timeBinsChanged)
+    def timeBins(self) -> int:
+        """
+        Returns the number of time bins in the active measurement.
+        This is used in the QML code to display the number of time bins.
+        """
+        if self._project_logic.active_measurement:
+            return self._project_logic.number_of_time_bins
+        return 0
+    
+    @Property(int, notify=timeFrameChanged)
+    def timeFrame(self) -> int:
+        """
+        Returns the current time frame of the active measurement.
+        This is used in the QML code to display the current time frame.
+        """
+        if self._project_logic.active_measurement:
+            return self._project_logic.time_frame
+        return 0
+    
+    @timeFrame.setter
+    def timeFrame(self, value: int):
+        """
+        Sets the current time frame of the active measurement.
+        This is used in the QML code to change the time frame.
+        """
+        if self._project_logic.active_measurement:
+            if value < 0:
+                value = 0
+            elif value >= self._project_logic.number_of_time_bins:
+                value = self._project_logic.number_of_time_bins - 1
+            self._project_logic.time_frame = value
+            self.timeFrameChanged.emit()
+        else:
+            raise ValueError("No active measurement set.")
 
     @Property(bool, notify=measurementCreatedChanged)
     def measurementCreated(self) -> bool:
@@ -52,6 +101,26 @@ class Measurements(QObject):
         """
         return self._project_logic.get_measurements_as_list_of_dicts()
     
+    @Property('QVariantList', notify=ROIListChanged)
+    def ROIList(self) -> list[dict[str, str]]:
+        """
+        Returns the list of ROIs in the active measurement.
+        This is used in the QML code to display the list of ROIs.
+        """
+        if self._project_logic.active_measurement:
+            measurement = self._project_logic.get_measurements()[-1]
+            
+        return []
+
+    @Property('QVariantList', notify=ROIListChanged)
+    def test(self) -> QObject:
+        return QLineSeries(
+            # QPointFList(
+            #     [0, 0], [1.1, 2.1], [1.9, 3.3],
+            #     [2.1, 2.1], [2.9, 4.9], [3.4, 3.0],
+            #     [4.1, 3.3]
+            # )
+        )
 
     ##########################
     # GUI accessible functions
@@ -73,7 +142,6 @@ class Measurements(QObject):
         """
         self._project_logic.active_measurement = name
         self.activeMeasurementChanged.emit()
-        console.debug(IO.format_msg('main', f"Active measurement changed to '{name}'."))
 
     @Slot(int)
     def removeMeasurement(self, index: int) -> None:
@@ -82,8 +150,8 @@ class Measurements(QObject):
         The index is the index of the measurement in the list of measurements.
         """
         self._project_logic.remove_measurement(index)
-        self.measurementListChanged.emit()
         self.activeMeasurementChanged.emit()
+        self.measurementListChanged.emit()
         self.measurementCreatedChanged.emit()
-        console.debug(IO.format_msg('main', f"Measurement at index {index} removed."))
+
 

@@ -41,12 +41,24 @@ class Backend(QObject):
         # This allows, through the methods of this class, to update dependent objects, but keep them
         # unaware of each other.
 
+        # ---------- #
         # Project
+        # ---------- #
+
+        # Signal to slot connections
         self._project.nameChanged.connect(self.onProjectNameChanged)
         self._project.createdChanged.connect(self.onProjectCreatedChanged)
 
+        # ---------- #
         # Measurements
-        #self._measurements.activeMeasurementChanged.connect()
+        # ---------- #
+
+        # Signal to signal connections
+        self._measurements.activeMeasurementChanged.connect(self._measurements.imageSourceChanged)
+        self._measurements.activeMeasurementChanged.connect(self._measurements.timeBinsChanged)
+        self._measurements.activeMeasurementChanged.connect(self._measurements.timeFrameChanged)
+        self._measurements.timeFrameChanged.connect(self._measurements.imageSourceChanged)
+
 
     ##########################
     # GUI accessible variables

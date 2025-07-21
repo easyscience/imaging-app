@@ -88,6 +88,7 @@ Column {
             mouseArea.onPressed: {
                 console.debug(`Changing active measurement to: ${tableView.model[index].name}`)
                 Globals.BackendWrapper.changeActiveMeasurement(tableView.model[index].name)
+                Globals.References.pages.measurement.sidebar.basic.groups.timeFrameSlider.slider.value = 0
             }
         }
         // Table rows
@@ -108,8 +109,5 @@ Column {
         Loader {
             source: '../Popups/OpenMeasurementFile.qml'
         }
-
     }
-    // Control buttons below table
-
 }

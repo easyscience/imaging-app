@@ -62,13 +62,14 @@ QtObject {
     ///////////////
 
     readonly property bool measurementCreated: activeBackend.measurements.measurementCreated
-    // onMeasurementCreatedChanged: activeBackend.measurements.measurementCreated = measurementCreated
-
     readonly property string activeMeasurement: activeBackend.measurements.activeMeasurement
-    // onActiveMeasurementChanged: Globals.References.pages.measurement.mainContent.measurementViewer.source = activeBackend.measurements.activeMeasurement
-
+    readonly property string imageSource: activeBackend.measurements.imageSource
     readonly property var measurementsList: activeBackend.measurements.measurementsList
-    // onMeasurementsListChanged: activeBackend.measurements.measurementsList = measurementsList
+    readonly property int timeBins: activeBackend.measurements.timeBins
+    property int timeFrame: activeBackend.measurements.timeFrame
+    onTimeFrameChanged: activeBackend.measurements.timeFrame = timeFrame
+    readonly property var spectrum: activeBackend.measurements.ROIList
+    readonly property var test: activeBackend.measurements.test
 
     function changeActiveMeasurement(string) { activeBackend.measurements.changeActiveMeasurement(string) }
     function measurementLoad(string) {activeBackend.measurements.load(string)}

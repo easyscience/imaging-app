@@ -25,7 +25,7 @@ EaComponents.ContentPage {
         ]
 
         items: [
-            Loader { source: 'MainArea/MeasurementView.qml' }
+            Loader { source: 'MainArea/Layout.qml' }
         ]
     }
 

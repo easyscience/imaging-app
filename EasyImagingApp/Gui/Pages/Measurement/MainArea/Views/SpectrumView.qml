@@ -1,0 +1,20 @@
+// SPDX-FileCopyrightText: 2024 EasyApp contributors
+// SPDX-License-Identifier: BSD-3-Clause
+// © 2024 Contributors to the EasyApp project <https://github.com/easyscience/EasyApp>
+
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+
+import EasyApp.Gui.Style as EaStyle
+import EasyApp.Gui.Animations as EaAnimations
+import EasyApp.Gui.Elements as EaElements
+
+import Gui.Globals as Globals
+
+
+Rectangle { 
+    id: spectrumViewer
+    color: EaStyle.Colors.mainContentBackground
+    Behavior on color { EaAnimations.ThemeChange {} }
+}

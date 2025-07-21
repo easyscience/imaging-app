@@ -1,3 +1,4 @@
+from matplotlib import image
 from ...imageprovider import EasyImageProvider
 import numpy as np
 from ..temp.project import Project as ProjectLib
@@ -7,6 +8,7 @@ class Project():
     def __init__(self, project_lib: ProjectLib):
         self._project_lib = project_lib
         self._active_measurement = None
+        self._time_frame = 0
 
         # This class is a singleton, so it can be accessed globally
         self._image_provider = EasyImageProvider()
@@ -19,12 +21,17 @@ class Project():
         name = measurement.name
         # Rescale and add the measurement image to the image provider
         image = data_array['image']['c', 0].values
-        image = np.sum(image, axis=0)
-        #image = image[0]
-        image -= image.min()
-        image *= (2**16 - 1) / image.max()
-        self._image_provider.addOrUpdateLayer(name, image.astype(np.uint16))
+        for frame in range(image.shape[0]):
+            image[frame] -= image[frame].min()
+            if image[frame].max() == 0:
+                console.debug(f"Measurement '{name}' frame {frame} has no data, skipping rescaling.")
+            else:
+                image[frame] *= (2**16 - 1) / image[frame].max()
+            if frame == 0:
+                console.debug(f'Frame {frame} of measurement {name} has shape {image[frame].shape} and max value {image[frame].max()}')
+            self._image_provider.addOrUpdateLayer(name+f"_{frame}", image[frame].astype(np.uint16))
         self._active_measurement = name
+        self._time_frame = 0
 
     def get_measurements(self):
         """Get all measurements in the project."""
@@ -38,9 +45,11 @@ class Project():
         """Remove a measurement from the project by index."""
         measurement = self._project_lib.get_measurements().pop(index)
         name = measurement.name
-        self._image_provider.removeLayer(name)
+        for frame in range(self.number_of_time_bins):
+            self._image_provider.removeLayer(name + f"_{frame}")
         if name == self._active_measurement:
             self._active_measurement = self.get_measurements()[0].name if self.get_measurements() else None
+        self._time_frame = 0
         console.debug(f"Measurement '{name}' removed from the project.")
 
     def get_measurements_as_list_of_dicts(self) -> list[dict[str, str]]:
@@ -58,5 +67,28 @@ class Project():
         names = [m.name for m in self._project_lib.get_measurements()]
         if name in names:
             self._active_measurement = name
+            self._time_frame = 0
         else:
             raise ValueError(f"Measurement '{name}' not found in the project.")
+
+    @property
+    def time_frame(self) -> int:
+        """Get the current time frame of the active measurement."""
+        return self._time_frame
+
+    @time_frame.setter
+    def time_frame(self, value: int):
+        """Set the current time frame of the active measurement."""
+        if self._active_measurement is None:
+            raise ValueError("No active measurement set.")
+        self._time_frame = value
+
+    @property
+    def number_of_time_bins(self) -> int:
+        """Get the number of time bins in the active measurement."""
+        if self._active_measurement:
+            list_of_measurements = self._project_lib.get_measurements()
+            for measurement in list_of_measurements:
+                if measurement.name == self._active_measurement:
+                    return measurement.number_of_time_bins
+        return 0

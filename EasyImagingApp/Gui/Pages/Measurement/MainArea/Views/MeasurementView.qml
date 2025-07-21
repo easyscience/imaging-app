@@ -20,17 +20,9 @@ Image {
     cache: false
     smooth: false
     asynchronous: true
-    source: Globals.BackendWrapper.activeMeasurement
+    source: Globals.BackendWrapper.imageSource
     Component.onCompleted: {
-        Globals.References.pages.measurement.mainContent.measurementViewer = measurementViewer
+        Globals.References.pages.measurement.mainContent.views.measurementViewer = measurementViewer
     }
 }
 
-
-// Rectangle { 
-//     id: spectrumViewer
-//     color: EaStyle.Colors.mainContentBackground
-//     Behavior on color { EaAnimations.ThemeChange {} }
-// }
-
-// "image://easyimage/"

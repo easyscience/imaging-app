@@ -1,13 +1,14 @@
 from PySide6.QtQuick import QQuickImageProvider
 import numpy as np
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QImage
+from PySide6.QtGui import QImage, QPixmap
 from easyscience.utils.classUtils import singleton
+from EasyApp.Logic.Logging import console
 
 @singleton
 class EasyImageProvider(QQuickImageProvider):
     def __init__(self):
-        super().__init__(QQuickImageProvider.ImageType.Image)
+        super().__init__(QQuickImageProvider.ImageType.Pixmap)
  
         self.name = 'easyimage'
 
@@ -19,7 +20,7 @@ class EasyImageProvider(QQuickImageProvider):
         # self._imageConstructor = ImageConstructor()
         # self._idConstructor = IdConstructor()
 
-    def requestImage(self, image_id: str, size: QSize, requested_size: QSize) -> QImage:
+    def requestPixmap(self, image_id: str, size: QSize, requested_size: QSize) -> QPixmap:
         if (image_id in self._images.keys()) and (self._images[image_id] is not None):
             """Retrieve the image data from the image library."""
             _pixels = self._images[image_id]
@@ -52,7 +53,7 @@ class EasyImageProvider(QQuickImageProvider):
                 QImage.Format_Grayscale16,
             )
     
-            return img
+            return QPixmap.fromImage(img)
         else:
             raise ValueError(
                 " image provider was unable to find image "

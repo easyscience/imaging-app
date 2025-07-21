@@ -21,4 +21,13 @@ EaComponents.SideBarColumn {
         Loader { source: 'Groups/ImportMeasurement.qml' }
     }
 
+    EaElements.GroupBox {
+        visible: Globals.BackendWrapper.measurementCreated
+        title: qsTr('Time frame')
+        icon: 'layer-group'
+        collapsed: false
+
+        Loader { source: 'Groups/TimeFrameSlider.qml' }
+    }
+
 }
