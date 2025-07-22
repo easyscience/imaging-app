@@ -92,3 +92,29 @@ class Project():
                 if measurement.name == self._active_measurement:
                     return measurement.number_of_time_bins
         return 0
+    
+    @property
+    def line_series_string(self) -> str:
+        """
+        Returns a string that can be used in QML to create a line series.
+        """
+        return """import QtGraphs;
+            import Gui.Globals as Globals;
+            import QtQuick;
+            LineSeries { 
+                id: "testSeries"
+                XYPoint { x: 0; y: 0 }
+                XYPoint { x: 1.1; y: 2.1 }
+                XYPoint { x: 1.9; y: 3.3 }
+                XYPoint { x: 2.1; y: 2.1 }
+                XYPoint { x: 2.9; y: 4.9 }
+                XYPoint { x: 3.4; y: 3.0 }
+                XYPoint { x: 4.1; y: 3.3 }
+                Component.onCompleted: {
+                    console.debug('Test series created');
+                    Globals.References.pages.measurement.mainContent.views.spectrumView.addSeries(testSeries);
+                    console.debug('Test series added to spectrum view');
+                    }
+                }
+        """
+        

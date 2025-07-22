@@ -4,4 +4,3 @@ singleton ApplicationInfo ApplicationInfo.qml
 singleton BackendWrapper BackendWrapper.qml
 singleton References References.qml
 singleton Variables Variables.qml
-singleton Series Series.qml

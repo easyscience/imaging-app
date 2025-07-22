@@ -112,15 +112,15 @@ class Measurements(QObject):
             
         return []
 
-    @Property('QVariantList', notify=ROIListChanged)
-    def test(self) -> QObject:
-        return QLineSeries(
-            # QPointFList(
-            #     [0, 0], [1.1, 2.1], [1.9, 3.3],
-            #     [2.1, 2.1], [2.9, 4.9], [3.4, 3.0],
-            #     [4.1, 3.3]
-            # )
-        )
+    @Property(str, constant=True)
+    def lineSeriesString(self) -> str:
+        """
+        Returns the QML string representation of the line series for the active measurement.
+        This is used in the QML code to create the line series.
+        """
+        if self._project_logic.active_measurement:
+            return self._project_logic.line_series_string
+        return ""
 
     ##########################
     # GUI accessible functions

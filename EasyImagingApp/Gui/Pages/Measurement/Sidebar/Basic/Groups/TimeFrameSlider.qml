@@ -94,9 +94,7 @@ Column {
         text: qsTr("Add Series")
         onClicked: {
             console.debug(`Clicking '${text}' button: ${this}`)
-            Globals.References.pages.measurement.mainContent.views.spectrumView.addSeries(Globals.References.getTestSeries())
-            console.debug('Number of points in series: ' + Globals.References.testSeries.count)
-            console.debug('Spectrum has series? ' + Globals.References.pages.measurement.mainContent.views.spectrumView.hasSeries(Globals.References.testSeries))
+            Globals.BackendWrapper.getTestSeries()
         }
     }
 

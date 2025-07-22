@@ -74,6 +74,9 @@ QtObject {
     function changeActiveMeasurement(string) { activeBackend.measurements.changeActiveMeasurement(string) }
     function measurementLoad(string) {activeBackend.measurements.load(string)}
     function measurementRemove(index) { activeBackend.measurements.removeMeasurement(index) }
+    function getTestSeries() {
+        Qt.createQmlObject(activeBackend.measurements.lineSeriesString, Globals.References.pages.measurement.mainContent.views.spectrumView, 'LineSeries');
+    }
 
     ///////////////
     // Summary page
