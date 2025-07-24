@@ -5,6 +5,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtGraphs
 
 import EasyApp.Gui.Style as EaStyle
 import EasyApp.Gui.Animations as EaAnimations
@@ -13,8 +14,24 @@ import EasyApp.Gui.Elements as EaElements
 import Gui.Globals as Globals
 
 
-Rectangle { 
+GraphsView {
     id: spectrumViewer
-    color: EaStyle.Colors.mainContentBackground
-    Behavior on color { EaAnimations.ThemeChange {} }
+    anchors.fill: parent
+
+    axisX: ValueAxis {
+        id: xAxis
+        min: Globals.BackendWrapper.minTime
+        max: Globals.BackendWrapper.maxTime
+        gridVisible: false
+    }
+    axisY: ValueAxis {
+        id: yAxis
+        min: 0.0
+        max: Globals.BackendWrapper.maxIntensity
+        gridVisible: false
+    }
+
+    Component.onCompleted: {
+        Globals.References.pages.measurement.mainContent.views.spectrumView = spectrumViewer;
+    }
 }
