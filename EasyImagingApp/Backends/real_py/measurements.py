@@ -3,8 +3,6 @@
 # © 2024 Contributors to the EasyApp project <https://github.com/easyscience/EasyApp>
 
 from PySide6.QtCore import QObject, Signal, Slot, Property
-from PySide6.QtGraphs import QLineSeries, QPointFList
-import numpy as np
 
 from EasyApp.Logic.Logging import console
 from .logic.helpers import IO
@@ -19,6 +17,7 @@ class Measurements(QObject):
     timeBinsChanged = Signal()
     timeFrameChanged = Signal()
     ROIListChanged = Signal()
+    maxIntensityChanged = Signal()
 
     def __init__(self, project_lib: ProjectLib):
         super().__init__()
@@ -119,8 +118,39 @@ class Measurements(QObject):
         This is used in the QML code to create the line series.
         """
         if self._project_logic.active_measurement:
-            return self._project_logic.line_series_string
+            return self._project_logic.spectrum_line_series()
         return ""
+    
+    @Property(float, notify=maxIntensityChanged)
+    def maxIntensity(self) -> float:
+        """
+        Returns the maximum value of the spectrum data.
+        This is used in the QML code to set the maximum value of the spectrum.
+        """
+        if self._project_logic.active_measurement:
+            max_intensity = self._project_logic.spectrum().values.max()
+            return max_intensity
+        return 0.0
+    
+    @Property(float, notify=activeMeasurementChanged)
+    def minTime(self) -> float:
+        """
+        Returns the minimum time value of the active measurement.
+        This is used in the QML code to set the minimum time value of the spectrum.
+        """
+        if self._project_logic.active_measurement:
+            return self._project_logic.spectrum().coords['tof'].values.min()
+        return 0.0
+
+    @Property(float, notify=activeMeasurementChanged)
+    def maxTime(self) -> float:
+        """
+        Returns the maximum time value of the active measurement.
+        This is used in the QML code to set the maximum time value of the spectrum.
+        """
+        if self._project_logic.active_measurement:
+            return self._project_logic.spectrum().coords['tof'].values.max()
+        return 0.0
 
     ##########################
     # GUI accessible functions
@@ -153,5 +183,4 @@ class Measurements(QObject):
         self.activeMeasurementChanged.emit()
         self.measurementListChanged.emit()
         self.measurementCreatedChanged.emit()
-
 

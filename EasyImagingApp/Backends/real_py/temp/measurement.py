@@ -1,12 +1,13 @@
 import scitiff
 from scipp import DataArray
+from .region_of_interest import RegionOfInterest
 
 
 class Measurement:
     def __init__(self, data_array: DataArray, name: str):
         self._data_array = data_array
         self._name = name
-        self._list_of_ROIs = [((30, 30), (70, 70))]
+        self._regions_of_interest = {}
 
     @classmethod
     def from_file(cls, file_path: str, name: str):
@@ -25,21 +26,35 @@ class Measurement:
         return self._name
     
     @property
-    def region_of_interests(self) -> list[tuple[tuple[int, int], tuple[int, int]]]:
-        """Get the list of region of interests (ROIs) for the measurement."""
-        return self._list_of_ROIs
-    
-    def get_spectrum(self, ROI: tuple[tuple[int, int], tuple[int, int]]) -> DataArray:
-        """Get the spectrum for a given ROI."""
-        x_start, y_start = ROI[0]
-        x_end, y_end = ROI[1]
-        spectrum = self._data_array['image']['x', x_start:x_end, 'y', y_start:y_end]
-        return spectrum.mean(dim=['x', 'y'])
-    
-    @property
     def number_of_time_bins(self) -> int:
         """Get the number of time bins in the measurement."""
         if 't' in self._data_array.dims:
             index = self._data_array.dims.index('t')
             return self._data_array['image'].shape[index]
         return 0
+
+    def create_region_of_interest(self, name: str, x_start: int, y_start: int, x_end: int, y_end: int) -> None:
+        """Create a new region of interest (ROI) for the measurement."""
+        roi = RegionOfInterest(name, x_start, y_start, x_end, y_end)
+        self._regions_of_interest[name] = roi
+
+    def get_region_of_interest(self, name: str) -> RegionOfInterest:
+        """Get a region of interest (ROI) by name."""
+        if name in self._regions_of_interest:
+            return self._regions_of_interest[name]
+        raise KeyError(f"Region of interest '{name}' not found in measurement '{self._name}'.")
+    
+    def spectrum(self, region_of_interest: RegionOfInterest = None) -> DataArray:
+        """
+        Get the spectrum of the measurement.
+        If a region of interest is provided, the spectrum is calculated for that region.
+        """
+        x_unit = self._data_array['image'].coords['x'].unit
+        y_unit = self._data_array['image'].coords['y'].unit
+        if region_of_interest:
+            x_start = region_of_interest.x_start * x_unit
+            y_start = region_of_interest.y_start * y_unit
+            x_end = region_of_interest.x_end * x_unit
+            y_end = region_of_interest.y_end * y_unit
+            return self._data_array['image']['x', x_start:x_end]['y', y_start:y_end].mean('x').mean('y')
+        return self._data_array['image'].mean('x').mean('y')

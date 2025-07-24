@@ -57,6 +57,7 @@ class Backend(QObject):
         self._measurements.activeMeasurementChanged.connect(self._measurements.imageSourceChanged)
         self._measurements.activeMeasurementChanged.connect(self._measurements.timeBinsChanged)
         self._measurements.activeMeasurementChanged.connect(self._measurements.timeFrameChanged)
+        self._measurements.activeMeasurementChanged.connect(self._measurements.maxIntensityChanged)
         self._measurements.timeFrameChanged.connect(self._measurements.imageSourceChanged)
 
 

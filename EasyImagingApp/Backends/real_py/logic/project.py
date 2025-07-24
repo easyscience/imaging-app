@@ -1,6 +1,7 @@
-from matplotlib import image
+
 from ...imageprovider import EasyImageProvider
 import numpy as np
+import scipp as sc
 from ..temp.project import Project as ProjectLib
 from EasyApp.Logic.Logging import console
 
@@ -92,8 +93,45 @@ class Project():
                 if measurement.name == self._active_measurement:
                     return measurement.number_of_time_bins
         return 0
-    
-    @property
+
+    def spectrum(self, region_of_interest=None):
+        """
+        Get the spectrum of the active measurement.
+        If a region of interest is provided, the spectrum is calculated for that region.
+        """
+        if self._active_measurement:
+            list_of_measurements = self._project_lib.get_measurements()
+            for measurement in list_of_measurements:
+                if measurement.name == self._active_measurement:
+                    return measurement.spectrum(region_of_interest)
+        raise ValueError("No active measurement set or measurement not found.")
+
+    def spectrum_line_series(self, region_of_interest=None) -> str:
+        """
+        Returns a string that can be used in QML to create a line series from the spectrum of the active measurement.
+        If a region of interest is provided, the spectrum is calculated for that region.
+        """
+        spectrum = self.spectrum(region_of_interest)
+        times = sc.midpoints(spectrum.coords['tof']).values
+        intensities = spectrum['c', 0].values
+
+        points = [f'XYPoint {{ x: {times[i]}; y: {intensities[i]} }}' for i in range(len(times))]
+        
+        begining_string = """import QtGraphs;
+            import Gui.Globals as Globals;
+            import QtQuick;
+            LineSeries {
+            id: spectrumSeries
+            """
+        end_string = """            Component.onCompleted: {
+                console.debug('Spectrum series created');
+                Globals.References.pages.measurement.mainContent.views.spectrumView.addSeries(spectrumSeries);
+                console.debug('Spectrum series added to spectrum view');
+            }
+            }"""
+        console.debug(f"Creating line series with {len(points)} points.")
+        return begining_string + '\n'.join(points) + end_string
+
     def line_series_string(self) -> str:
         """
         Returns a string that can be used in QML to create a line series.

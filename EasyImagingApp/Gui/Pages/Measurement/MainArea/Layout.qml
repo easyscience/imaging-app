@@ -24,7 +24,7 @@ Column {
     Rectangle {
         width: parent.width
         height: parent.height * 0.7
-        color: EaStyle.Colors.themeBackground
+        color: EaStyle.Colors.mainContentBackground
 
         Image {
         id: measurementViewer
@@ -43,8 +43,8 @@ Column {
     }
 
     Rectangle {
-        
-        color: "blue"
+
+        color: EaStyle.Colors.chartBackground
         width: parent.width
 
         height: parent.height * 0.3
@@ -53,25 +53,19 @@ Column {
 
             id: spectrumViewer
             anchors.fill: parent
+            theme: EaStyle.Colors.theme
 
-                axisX: ValueAxis {
+            axisX: ValueAxis {
                 id: xAxis
-                max: 4.1
+                min: Globals.BackendWrapper.minTime
+                max: Globals.BackendWrapper.maxTime
+                gridVisible: false
             }
             axisY: ValueAxis {
                 id: yAxis
-                max: 4.9
-            }
-
-            LineSeries {
-                name: "Line"
-                XYPoint { x: 0; y: 0 }
-                XYPoint { x: 1.1; y: 2.1 }
-                XYPoint { x: 1.9; y: 3.3 }
-                XYPoint { x: 2.1; y: 2.1 }
-                XYPoint { x: 2.9; y: 4.9 }
-                XYPoint { x: 3.4; y: 3.0 }
-                XYPoint { x: 4.1; y: 3.3 }
+                min: 0.0
+                max: Globals.BackendWrapper.maxIntensity
+                gridVisible: false
             }
 
         Component.onCompleted: {

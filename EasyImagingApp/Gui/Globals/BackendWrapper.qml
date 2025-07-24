@@ -69,7 +69,9 @@ QtObject {
     property int timeFrame: activeBackend.measurements.timeFrame
     onTimeFrameChanged: activeBackend.measurements.timeFrame = timeFrame
     readonly property var spectrum: activeBackend.measurements.ROIList
-    readonly property var test: activeBackend.measurements.test
+    readonly property var maxIntensity: activeBackend.measurements.maxIntensity
+    readonly property var minTime: activeBackend.measurements.minTime
+    readonly property var maxTime: activeBackend.measurements.maxTime
 
     function changeActiveMeasurement(string) { activeBackend.measurements.changeActiveMeasurement(string) }
     function measurementLoad(string) {activeBackend.measurements.load(string)}
