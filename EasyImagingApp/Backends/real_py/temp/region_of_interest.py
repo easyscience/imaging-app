@@ -1,9 +1,14 @@
+from typing import TYPE_CHECKING
+from scipp import scalar
+if TYPE_CHECKING:
+    from scipp import scalar
+
 class RegionOfInterest:
     """
     Class representing a region of interest (ROI) in an image.
     It is used to define a specific area within an image for further processing or analysis.
     """
-    def __init__(self, name: str, x_start: int, y_start: int, x_end: int, y_end: int):
+    def __init__(self, name: str, x_start: scalar, y_start: scalar, x_end: scalar, y_end: scalar):
         """
         Initialize the ROI with start and end coordinates.
 

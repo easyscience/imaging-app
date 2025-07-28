@@ -30,4 +30,12 @@ EaComponents.SideBarColumn {
         Loader { source: 'Groups/TimeFrameSlider.qml' }
     }
 
+    EaElements.GroupBox {
+        title: qsTr('Regions of Interest')
+        icon: 'crop-simple'
+        collapsed: false
+
+        Loader { source: 'Groups/RegionsOfInterest.qml' }
+    }
+
 }

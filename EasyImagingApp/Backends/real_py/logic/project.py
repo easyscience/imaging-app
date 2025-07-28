@@ -31,7 +31,7 @@ class Project():
             if frame == 0:
                 console.debug(f'Frame {frame} of measurement {name} has shape {image[frame].shape} and max value {image[frame].max()}')
             self._image_provider.addOrUpdateLayer(name+f"_{frame}", image[frame].astype(np.uint16))
-        self._active_measurement = name
+        self._active_measurement = measurement
         self._time_frame = 0
 
     def get_measurements(self):
@@ -48,8 +48,8 @@ class Project():
         name = measurement.name
         for frame in range(self.number_of_time_bins):
             self._image_provider.removeLayer(name + f"_{frame}")
-        if name == self._active_measurement:
-            self._active_measurement = self.get_measurements()[0].name if self.get_measurements() else None
+        if measurement == self.active_measurement:
+            self._active_measurement = self.get_measurements()[0] if self.get_measurements() else None
         self._time_frame = 0
         console.debug(f"Measurement '{name}' removed from the project.")
 
@@ -65,12 +65,10 @@ class Project():
     @active_measurement.setter
     def active_measurement(self, name: str):
         """Set the active measurement."""
-        names = [m.name for m in self._project_lib.get_measurements()]
-        if name in names:
-            self._active_measurement = name
-            self._time_frame = 0
-        else:
-            raise ValueError(f"Measurement '{name}' not found in the project.")
+        measurements_list = self._project_lib.get_measurements()
+        measurement = [m for m in measurements_list if m.name == name][0]
+        self._active_measurement = measurement
+        self._time_frame = 0
 
     @property
     def time_frame(self) -> int:
@@ -80,30 +78,36 @@ class Project():
     @time_frame.setter
     def time_frame(self, value: int):
         """Set the current time frame of the active measurement."""
-        if self._active_measurement is None:
+        if self.active_measurement is None:
             raise ValueError("No active measurement set.")
         self._time_frame = value
 
     @property
     def number_of_time_bins(self) -> int:
         """Get the number of time bins in the active measurement."""
-        if self._active_measurement:
-            list_of_measurements = self._project_lib.get_measurements()
-            for measurement in list_of_measurements:
-                if measurement.name == self._active_measurement:
-                    return measurement.number_of_time_bins
+        if self.active_measurement:
+            return self.active_measurement.number_of_time_bins
         return 0
+    
+    @property
+    def max_intensity(self) -> float:
+        """Get the maximum intensity of the active measurement."""
+        max_intensity = 1.0
+        if self.active_measurement:
+            if self.active_measurement.regions_of_interest:
+                regions_of_interest = self.active_measurement.regions_of_interest
+                for roi in regions_of_interest:
+                    spectrum = self.active_measurement.spectrum(roi).values
+                    max_intensity = max(max_intensity, spectrum.max())
+        return float(max_intensity)
 
     def spectrum(self, region_of_interest=None):
         """
         Get the spectrum of the active measurement.
         If a region of interest is provided, the spectrum is calculated for that region.
         """
-        if self._active_measurement:
-            list_of_measurements = self._project_lib.get_measurements()
-            for measurement in list_of_measurements:
-                if measurement.name == self._active_measurement:
-                    return measurement.spectrum(region_of_interest)
+        if self.active_measurement:
+            return self.active_measurement.spectrum(region_of_interest)
         raise ValueError("No active measurement set or measurement not found.")
 
     def spectrum_line_series(self, region_of_interest=None) -> str:
@@ -132,27 +136,53 @@ class Project():
         console.debug(f"Creating line series with {len(points)} points.")
         return begining_string + '\n'.join(points) + end_string
 
-    def line_series_string(self) -> str:
+    def create_ROI(self, relative_startX: float, relative_startY: float, relative_endX: float, relative_endY: float) -> None:
         """
-        Returns a string that can be used in QML to create a line series.
+        Create a region of interest (ROI) in the active measurement.
+        The ROI is defined by the start and end coordinates.
         """
-        return """import QtGraphs;
-            import Gui.Globals as Globals;
-            import QtQuick;
-            LineSeries { 
-                id: "testSeries"
-                XYPoint { x: 0; y: 0 }
-                XYPoint { x: 1.1; y: 2.1 }
-                XYPoint { x: 1.9; y: 3.3 }
-                XYPoint { x: 2.1; y: 2.1 }
-                XYPoint { x: 2.9; y: 4.9 }
-                XYPoint { x: 3.4; y: 3.0 }
-                XYPoint { x: 4.1; y: 3.3 }
-                Component.onCompleted: {
-                    console.debug('Test series created');
-                    Globals.References.pages.measurement.mainContent.views.spectrumView.addSeries(testSeries);
-                    console.debug('Test series added to spectrum view');
-                    }
-                }
-        """
+        if self.active_measurement is None:
+            raise ValueError("No active measurement set.")
         
+        data = self.active_measurement.data_array['image']
+
+        x_min, x_max = data.coords['x'].values.min(), data.coords['x'].values.max()
+        y_min, y_max = data.coords['y'].values.min(), data.coords['y'].values.max()
+        unit = data.coords['x'].unit
+
+        if relative_startX > relative_endX:
+            startX = (relative_endX * (x_max - x_min) + x_min)*unit
+            endX = (relative_startX * (x_max - x_min) + x_min)*unit
+        else:
+            startX = (relative_startX * (x_max - x_min) + x_min)*unit
+            endX = (relative_endX * (x_max - x_min) + x_min)*unit
+        if relative_startY > relative_endY:
+            startY = (relative_endY * (y_max - y_min) + y_min)*unit
+            endY = (relative_startY * (y_max - y_min) + y_min)*unit
+        else:
+            startY = (relative_startY * (y_max - y_min) + y_min)*unit
+            endY = (relative_endY * (y_max - y_min) + y_min)*unit
+
+        name = 'Region_' + str(len(self.active_measurement.regions_of_interest))
+
+        self.active_measurement.create_region_of_interest(name, startX, startY, endX, endY)
+        console.debug(f"ROI created from ({startX}, {startY}) to ({endX}, {endY}) in measurement '{self.active_measurement.name}'.")
+
+    def get_regions_of_interest_as_list_of_dicts(self) -> list[dict[str, str]]:
+        """Get the list of regions of interest as a list of dictionaries."""
+        if self.active_measurement:
+            return [{'name': roi.name} for roi in self.active_measurement.regions_of_interest]
+        return []
+    
+    def remove_ROI(self, index: int) -> None:
+        """
+        Remove a region of interest (ROI) from the active measurement.
+        The index is the index of the ROI in the list of ROIs.
+        """
+        if self.active_measurement is None:
+            raise ValueError("No active measurement set.")
+        
+        rois = self.active_measurement.regions_of_interest
+        
+        roi = rois.pop(index)
+        console.debug(f"ROI '{roi.name}' removed from measurement '{self.active_measurement.name}'.")

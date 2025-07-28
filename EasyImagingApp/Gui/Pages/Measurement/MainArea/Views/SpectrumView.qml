@@ -15,7 +15,7 @@ import Gui.Globals as Globals
 
 
 GraphsView {
-    id: spectrumViewer
+    id: spectrumView
     anchors.fill: parent
 
     axisX: ValueAxis {
@@ -32,6 +32,15 @@ GraphsView {
     }
 
     Component.onCompleted: {
-        Globals.References.pages.measurement.mainContent.views.spectrumView = spectrumViewer;
+        Globals.References.pages.measurement.mainContent.views.spectrumView = spectrumView;
     }
+
+    Connections {
+        target: Globals.BackendWrapper.activeBackend.measurements
+        function onCreateNewSpectrum(qmlString) {
+            // console.debug("Creating new spectrum with QML string: ", qmlString);
+            Qt.createQmlObject(qmlString, spectrumView);
+        }
+    }
+
 }

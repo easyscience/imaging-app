@@ -68,7 +68,7 @@ QtObject {
     readonly property int timeBins: activeBackend.measurements.timeBins
     property int timeFrame: activeBackend.measurements.timeFrame
     onTimeFrameChanged: activeBackend.measurements.timeFrame = timeFrame
-    readonly property var spectrum: activeBackend.measurements.ROIList
+    readonly property var roiList: activeBackend.measurements.roiList
     readonly property var maxIntensity: activeBackend.measurements.maxIntensity
     readonly property var minTime: activeBackend.measurements.minTime
     readonly property var maxTime: activeBackend.measurements.maxTime
@@ -76,9 +76,17 @@ QtObject {
     function changeActiveMeasurement(string) { activeBackend.measurements.changeActiveMeasurement(string) }
     function measurementLoad(string) {activeBackend.measurements.load(string)}
     function measurementRemove(index) { activeBackend.measurements.removeMeasurement(index) }
-    function getTestSeries() {
-        Qt.createQmlObject(activeBackend.measurements.lineSeriesString, Globals.References.pages.measurement.mainContent.views.spectrumView, 'LineSeries');
+    function createROI(relative_startX, relative_startY, relative_endX, relative_endY) {
+        activeBackend.measurements.createROI(relative_startX, relative_startY, relative_endX, relative_endY)
     }
+    function removeROI(index) { activeBackend.measurements.removeROI(index) }
+    // function getTestSeries() {
+    //     Qt.createQmlObject(activeBackend.measurements.lineSeriesString, Globals.References.pages.measurement.mainContent.views.spectrumView);
+    // }
+    function plotSpectrum(index) {
+        activeBackend.measurements.plotSpectrum(index)
+    }
+
 
     ///////////////
     // Summary page

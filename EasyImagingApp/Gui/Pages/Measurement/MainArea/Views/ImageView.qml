@@ -14,7 +14,7 @@ import Gui.Globals as Globals
 
 
 Image {
-    id: measurementViewer
+    id: imageView
     anchors.fill: parent
     // fillMode: Image.Stretch
     fillMode: Image.PreserveAspectFit
@@ -24,7 +24,7 @@ Image {
     asynchronous: true
     source: Globals.BackendWrapper.imageSource
     Component.onCompleted: {
-        Globals.References.pages.measurement.mainContent.views.measurementViewer = measurementViewer
+        Globals.References.pages.measurement.mainContent.views.imageView = imageView
     }
 
     property int pressX
@@ -34,41 +34,45 @@ Image {
 
     MouseArea {
         id: roiRectArea
-        anchors.horizontalCenter: measurementViewer.horizontalCenter
-        anchors.verticalCenter: measurementViewer.verticalCenter
-        width: measurementViewer.paintedWidth
-        height: measurementViewer.paintedHeight
+        anchors.horizontalCenter: imageView.horizontalCenter
+        anchors.verticalCenter: imageView.verticalCenter
+        width: imageView.paintedWidth
+        height: imageView.paintedHeight
         acceptedButtons: Qt.LeftButton
         // hoverEnabled: true
         cursorShape: Qt.CrossCursor
 
         onPressed: {
-            measurementViewer.pressX = mouseX
-            measurementViewer.pressY = mouseY
-            measurementViewer.releaseX = mouseX
-            measurementViewer.releaseY = mouseY
+            imageView.pressX = mouseX
+            imageView.pressY = mouseY
+            imageView.releaseX = mouseX
+            imageView.releaseY = mouseY
             console.debug("Mouse pressed at: ", pressX, pressY)
         }
         onReleased: {
-            // measurementViewer.releaseX = mouseX
-            // measurementViewer.releaseY = mouseY
-            console.debug("Mouse released at: ", releaseX, releaseY)
+            Globals.BackendWrapper.createROI(
+                imageView.pressX/imageView.paintedWidth,
+                imageView.pressY/imageView.paintedHeight,
+                imageView.releaseX/imageView.paintedWidth,
+                imageView.releaseY/imageView.paintedHeight
+            )
+            console.debug("Mouse released at: ", releaseX/imageView.paintedWidth, releaseY/imageView.paintedHeight)
         }
         onPositionChanged: {
             if (mouseX < 0) {
-                measurementViewer.releaseX = 0
+                imageView.releaseX = 0
             } else if (mouseX > roiRectArea.width) {
-                measurementViewer.releaseX = roiRectArea.width
+                imageView.releaseX = roiRectArea.width
             } else {
-                measurementViewer.releaseX = mouseX
+                imageView.releaseX = mouseX
             }
 
             if (mouseY < 0) {
-                measurementViewer.releaseY = 0
+                imageView.releaseY = 0
             } else if (mouseY > roiRectArea.height) {
-                measurementViewer.releaseY = roiRectArea.height
+                imageView.releaseY = roiRectArea.height
             } else {
-                measurementViewer.releaseY = mouseY
+                imageView.releaseY = mouseY
             }
 
         }
@@ -79,10 +83,10 @@ Image {
             border.color: EaStyle.Colors.blue
             border.width: 2
 
-            x: Math.min(measurementViewer.pressX, measurementViewer.releaseX)
-            y: Math.min(measurementViewer.pressY, measurementViewer.releaseY)
-            width: Math.abs(measurementViewer.releaseX - measurementViewer.pressX)
-            height: Math.abs(measurementViewer.releaseY - measurementViewer.pressY)
+            x: Math.min(imageView.pressX, imageView.releaseX)
+            y: Math.min(imageView.pressY, imageView.releaseY)
+            width: Math.abs(imageView.releaseX - imageView.pressX)
+            height: Math.abs(imageView.releaseY - imageView.pressY)
 
             Behavior on color { EaAnimations.ThemeChange {} }
         }

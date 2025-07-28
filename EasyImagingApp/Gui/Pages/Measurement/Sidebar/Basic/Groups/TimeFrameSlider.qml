@@ -85,30 +85,4 @@ Column {
             Globals.References.pages.measurement.sidebar.basic.groups.timeFrameSlider.slider = timeslider
         }
     }
-
-
-    EaElements.SideBarButton {
-        enabled: true
-        wide: true
-        fontIcon: "file-import"
-        text: qsTr("Add Series")
-        onClicked: {
-            console.debug(`Clicking '${text}' button: ${this}`)
-            Globals.BackendWrapper.getTestSeries()
-        }
-    }
-
-    EaElements.SideBarButton {
-        enabled: true
-        wide: true
-        fontIcon: "file-import"
-        text: qsTr("Remove Series")
-        onClicked: {
-            console.debug(`Clicking '${text}' button: ${this}`)
-            Globals.References.pages.measurement.mainContent.views.spectrumView.removeSeries(0)
-        }
-    }
-
-    // Control buttons below table
-
 }

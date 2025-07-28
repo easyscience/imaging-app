@@ -17,7 +17,7 @@ class Measurements(QObject):
     timeBinsChanged = Signal()
     timeFrameChanged = Signal()
     ROIListChanged = Signal()
-    maxIntensityChanged = Signal()
+    createNewSpectrum = Signal(str)
 
     def __init__(self, project_lib: ProjectLib):
         super().__init__()
@@ -36,7 +36,7 @@ class Measurements(QObject):
         This is used in the QML code to display the image.
         """
         if self._project_logic.active_measurement:
-            return 'image://easyimage/' + self._project_logic.active_measurement + '_' + str(self._project_logic.time_frame)
+            return 'image://easyimage/' + self._project_logic.active_measurement.name + '_' + str(self._project_logic.time_frame)
 
     @Property(str, notify=activeMeasurementChanged)
     def activeMeasurement(self):
@@ -45,8 +45,8 @@ class Measurements(QObject):
         This is used in the QML code to display the image.
         """
         if self._project_logic.active_measurement:
-            return self._project_logic.active_measurement
-        
+            return self._project_logic.active_measurement.name
+
     @Property(int, notify=timeBinsChanged)
     def timeBins(self) -> int:
         """
@@ -56,7 +56,7 @@ class Measurements(QObject):
         if self._project_logic.active_measurement:
             return self._project_logic.number_of_time_bins
         return 0
-    
+
     @Property(int, notify=timeFrameChanged)
     def timeFrame(self) -> int:
         """
@@ -66,7 +66,7 @@ class Measurements(QObject):
         if self._project_logic.active_measurement:
             return self._project_logic.time_frame
         return 0
-    
+
     @timeFrame.setter
     def timeFrame(self, value: int):
         """
@@ -99,39 +99,23 @@ class Measurements(QObject):
         This is used in the QML code to display the list of measurements.
         """
         return self._project_logic.get_measurements_as_list_of_dicts()
-    
+
     @Property('QVariantList', notify=ROIListChanged)
-    def ROIList(self) -> list[dict[str, str]]:
+    def roiList(self) -> list[dict[str, str]]:
         """
         Returns the list of ROIs in the active measurement.
         This is used in the QML code to display the list of ROIs.
         """
-        if self._project_logic.active_measurement:
-            measurement = self._project_logic.get_measurements()[-1]
-            
-        return []
+        return self._project_logic.get_regions_of_interest_as_list_of_dicts()
 
-    @Property(str, constant=True)
-    def lineSeriesString(self) -> str:
-        """
-        Returns the QML string representation of the line series for the active measurement.
-        This is used in the QML code to create the line series.
-        """
-        if self._project_logic.active_measurement:
-            return self._project_logic.spectrum_line_series()
-        return ""
-    
-    @Property(float, notify=maxIntensityChanged)
+    @Property(float, notify=ROIListChanged)
     def maxIntensity(self) -> float:
         """
         Returns the maximum value of the spectrum data.
         This is used in the QML code to set the maximum value of the spectrum.
         """
-        if self._project_logic.active_measurement:
-            max_intensity = self._project_logic.spectrum().values.max()
-            return max_intensity
-        return 0.0
-    
+        return self._project_logic.max_intensity
+
     @Property(float, notify=activeMeasurementChanged)
     def minTime(self) -> float:
         """
@@ -184,3 +168,23 @@ class Measurements(QObject):
         self.measurementListChanged.emit()
         self.measurementCreatedChanged.emit()
 
+    @Slot(float, float, float, float)
+    def createROI(self, relative_startX: float, relative_startY: float, relative_endX: float, relative_endY: float) -> None:
+        self._project_logic.create_ROI(relative_startX, relative_startY, relative_endX, relative_endY)
+        self.ROIListChanged.emit()
+        self.plotSpectrum(-1)  # Plot spectrum for the newly created ROI
+
+    @Slot(int)
+    def removeROI(self, index: int) -> None:
+        """
+        Removes a region of interest (ROI) from the active measurement.
+        The index is the index of the ROI in the list of ROIs.
+        """
+        self._project_logic.remove_ROI(index)
+        self.ROIListChanged.emit()
+
+    @Slot(int)
+    def plotSpectrum(self, index: int) -> None:
+        ROI = self._project_logic.active_measurement.regions_of_interest[index]
+        string = self._project_logic.spectrum_line_series(ROI)
+        self.createNewSpectrum.emit(string)

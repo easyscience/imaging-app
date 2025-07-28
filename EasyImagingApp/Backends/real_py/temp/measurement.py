@@ -1,13 +1,17 @@
 import scitiff
 from scipp import DataArray
 from .region_of_interest import RegionOfInterest
-
+from typing import TYPE_CHECKING
+from scipp import scalar
+from EasyApp.Logic.Logging import console
+if TYPE_CHECKING:
+    from scipp import scalar
 
 class Measurement:
     def __init__(self, data_array: DataArray, name: str):
         self._data_array = data_array
         self._name = name
-        self._regions_of_interest = {}
+        self._regions_of_interest = []
 
     @classmethod
     def from_file(cls, file_path: str, name: str):
@@ -33,15 +37,21 @@ class Measurement:
             return self._data_array['image'].shape[index]
         return 0
 
-    def create_region_of_interest(self, name: str, x_start: int, y_start: int, x_end: int, y_end: int) -> None:
+    @property
+    def regions_of_interest(self) -> list[RegionOfInterest]:
+        """Get the list of regions of interest in the measurement."""
+        return self._regions_of_interest
+
+    def create_region_of_interest(self, name: str, x_start: scalar, y_start: scalar, x_end: scalar, y_end: scalar) -> None:
         """Create a new region of interest (ROI) for the measurement."""
         roi = RegionOfInterest(name, x_start, y_start, x_end, y_end)
-        self._regions_of_interest[name] = roi
+        self._regions_of_interest.append(roi)
 
     def get_region_of_interest(self, name: str) -> RegionOfInterest:
         """Get a region of interest (ROI) by name."""
-        if name in self._regions_of_interest:
-            return self._regions_of_interest[name]
+        for roi in self._regions_of_interest:
+            if roi.name == name:
+                return roi
         raise KeyError(f"Region of interest '{name}' not found in measurement '{self._name}'.")
     
     def spectrum(self, region_of_interest: RegionOfInterest = None) -> DataArray:
@@ -49,12 +59,11 @@ class Measurement:
         Get the spectrum of the measurement.
         If a region of interest is provided, the spectrum is calculated for that region.
         """
-        x_unit = self._data_array['image'].coords['x'].unit
-        y_unit = self._data_array['image'].coords['y'].unit
         if region_of_interest:
-            x_start = region_of_interest.x_start * x_unit
-            y_start = region_of_interest.y_start * y_unit
-            x_end = region_of_interest.x_end * x_unit
-            y_end = region_of_interest.y_end * y_unit
+            x_start = region_of_interest.x_start
+            y_start = region_of_interest.y_start
+            x_end = region_of_interest.x_end
+            y_end = region_of_interest.y_end
+            console.debug(f"x_start: {x_start}, y_start: {y_start}, x_end: {x_end}, y_end: {y_end}")
             return self._data_array['image']['x', x_start:x_end]['y', y_start:y_end].mean('x').mean('y')
         return self._data_array['image'].mean('x').mean('y')

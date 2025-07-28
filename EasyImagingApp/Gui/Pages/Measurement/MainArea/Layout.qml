@@ -29,7 +29,7 @@ Column {
 
         Loader { 
             anchors.fill: parent
-            source: 'Views/MeasurementView.qml' 
+            source: 'Views/ImageView.qml' 
         }
     }
 

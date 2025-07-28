@@ -36,7 +36,8 @@ QtObject {
             'mainContent': {
                 'views': {
                     'spectrumView': null,
-                    'measurementViewer': null,
+                    'imageView': null,
+                    'imageViewAxes': null,
                 },
             },
             'sidebar': {
