@@ -64,6 +64,5 @@ class Measurement:
             y_start = region_of_interest.y_start
             x_end = region_of_interest.x_end
             y_end = region_of_interest.y_end
-            console.debug(f"x_start: {x_start}, y_start: {y_start}, x_end: {x_end}, y_end: {y_end}")
             return self._data_array['image']['x', x_start:x_end]['y', y_start:y_end].mean('x').mean('y')
         return self._data_array['image'].mean('x').mean('y')

@@ -81,32 +81,15 @@ Column {
             EaComponents.TableViewButton {
                 fontIcon: "minus-circle"
                 ToolTip.text: qsTr("Remove this measurement")
-                onClicked: Globals.BackendWrapper.removeROI(index)
+                onClicked: {
+                    Globals.References.pages.measurement.mainContent.views.spectrumView.removeSeries(index)
+                    let roi = Globals.References.pages.measurement.mainContent.views.imageView.roiList.splice(index, 1)
+                    roi[0].destroy()
+                    Globals.BackendWrapper.removeROI(index)
+                    }
             }
         }
         // Table rows
     }
     // Table
-
-    EaElements.SideBarButton {
-        enabled: true
-        wide: true
-        fontIcon: "file-import"
-        text: qsTr("Add Series")
-        onClicked: {
-            console.debug(`Clicking '${text}' button: ${this}`)
-            // Globals.BackendWrapper.getTestSeries()
-        }
-    }
-
-    EaElements.SideBarButton {
-        enabled: true
-        wide: true
-        fontIcon: "file-import"
-        text: qsTr("Remove Series")
-        onClicked: {
-            console.debug(`Clicking '${text}' button: ${this}`)
-            Globals.References.pages.measurement.mainContent.views.spectrumView.removeSeries(0)
-        }
-    }
 }

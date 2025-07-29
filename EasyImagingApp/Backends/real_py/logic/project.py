@@ -128,7 +128,6 @@ class Project():
             id: spectrumSeries
             """
         end_string = """            Component.onCompleted: {
-                console.debug('Spectrum series created');
                 Globals.References.pages.measurement.mainContent.views.spectrumView.addSeries(spectrumSeries);
                 console.debug('Spectrum series added to spectrum view');
             }

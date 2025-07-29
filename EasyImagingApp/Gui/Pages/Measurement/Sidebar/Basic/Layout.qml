@@ -31,6 +31,7 @@ EaComponents.SideBarColumn {
     }
 
     EaElements.GroupBox {
+        visible: Globals.BackendWrapper.measurementCreated
         title: qsTr('Regions of Interest')
         icon: 'crop-simple'
         collapsed: false

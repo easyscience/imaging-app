@@ -32,6 +32,8 @@ Image {
     property int releaseX
     property int releaseY
 
+    property var roiList: []
+
     MouseArea {
         id: roiRectArea
         anchors.horizontalCenter: imageView.horizontalCenter
@@ -43,20 +45,12 @@ Image {
         cursorShape: Qt.CrossCursor
 
         onPressed: {
+            roiRect.visible = true;
             imageView.pressX = mouseX
             imageView.pressY = mouseY
             imageView.releaseX = mouseX
             imageView.releaseY = mouseY
             console.debug("Mouse pressed at: ", pressX, pressY)
-        }
-        onReleased: {
-            Globals.BackendWrapper.createROI(
-                imageView.pressX/imageView.paintedWidth,
-                imageView.pressY/imageView.paintedHeight,
-                imageView.releaseX/imageView.paintedWidth,
-                imageView.releaseY/imageView.paintedHeight
-            )
-            console.debug("Mouse released at: ", releaseX/imageView.paintedWidth, releaseY/imageView.paintedHeight)
         }
         onPositionChanged: {
             if (mouseX < 0) {
@@ -74,7 +68,30 @@ Image {
             } else {
                 imageView.releaseY = mouseY
             }
-
+        }
+        onReleased: {
+            Globals.BackendWrapper.createROI(
+                imageView.pressX/imageView.paintedWidth,
+                imageView.pressY/imageView.paintedHeight,
+                imageView.releaseX/imageView.paintedWidth,
+                imageView.releaseY/imageView.paintedHeight
+            )
+            console.debug("Mouse released at: ", releaseX, releaseY)
+            roiRect.visible = false;
+            const newRect = Qt.createQmlObject(
+                `import QtQuick 2.15;
+                 Rectangle { 
+                    color: 'transparent'
+                    border.color: "red"
+                    border.width: 2 
+                    x: ${Math.min(imageView.pressX, imageView.releaseX)}
+                    y: ${Math.min(imageView.pressY, imageView.releaseY)}
+                    width: ${Math.abs(imageView.releaseX - imageView.pressX)}
+                    height: ${Math.abs(imageView.releaseY - imageView.pressY)}
+                 }`,
+                roiRectArea
+            );
+            imageView.roiList.push(newRect);
         }
 
         Rectangle {
