@@ -70,7 +70,7 @@ Column {
     }
 
     Slider {
-        visible: Globals.BackendWrapper.measurementCreated
+        visible: Globals.BackendWrapper.measurementExists
         id: timeslider
         width: parent.width
         from: 0

@@ -127,13 +127,11 @@ class Project():
             LineSeries {
             id: spectrumSeries
             """
-        end_string = """            Component.onCompleted: {
-                Globals.References.pages.measurement.mainContent.views.spectrumView.addSeries(spectrumSeries);
-                console.debug('Spectrum series added to spectrum view');
-            }
+        end_string = """            Component.onDestruction: {
+                console.debug('Spectrum series destroyed');
             }"""
         console.debug(f"Creating line series with {len(points)} points.")
-        return begining_string + '\n'.join(points) + end_string
+        return begining_string + '\n'.join(points) + end_string + "}"
 
     def create_ROI(self, relative_startX: float, relative_startY: float, relative_endX: float, relative_endY: float) -> None:
         """

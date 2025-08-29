@@ -83,9 +83,11 @@ Column {
                 ToolTip.text: qsTr("Remove this measurement")
                 onClicked: {
                     Globals.References.pages.measurement.mainContent.views.spectrumView.removeSeries(index)
-                    let roi = Globals.References.pages.measurement.mainContent.views.imageView.roiList.splice(index, 1)
-                    roi[0].destroy()
+                    let serie = Globals.Variables.measurementRoiSeriesList[Globals.BackendWrapper.activeMeasurementIndex].splice(index, 1);
+                    let roi = Globals.Variables.measurementRoiRectList[Globals.BackendWrapper.activeMeasurementIndex].splice(index, 1)
                     Globals.BackendWrapper.removeROI(index)
+                    roi[0].destroy()
+                    // serie[0].destroy() Breaks the app, for some reason
                     }
             }
         }

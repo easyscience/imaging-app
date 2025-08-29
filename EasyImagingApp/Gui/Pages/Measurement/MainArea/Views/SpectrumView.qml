@@ -38,8 +38,10 @@ GraphsView {
     Connections {
         target: Globals.BackendWrapper.activeBackend.measurements
         function onCreateNewSpectrum(qmlString) {
-            // console.debug("Creating new spectrum with QML string: ", qmlString);
-            Qt.createQmlObject(qmlString, spectrumView);
+            let newSeries = Qt.createQmlObject(qmlString, spectrumView);
+            spectrumView.addSeries(newSeries);
+            Globals.Variables.measurementRoiSeriesList[Globals.BackendWrapper.activeMeasurementIndex].push(newSeries);
+            console.debug("Measurement ROI series list after adding new series:", Globals.Variables.measurementRoiSeriesList);
         }
     }
 

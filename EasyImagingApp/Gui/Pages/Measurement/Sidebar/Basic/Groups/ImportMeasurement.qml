@@ -83,12 +83,25 @@ Column {
             EaComponents.TableViewButton {
                 fontIcon: "minus-circle"
                 ToolTip.text: qsTr("Remove this measurement")
-                onClicked: Globals.BackendWrapper.measurementRemove(index)
+                onClicked: {
+                    console.debug('Rect list before removal:', Globals.Variables.measurementRoiRectList)
+                    console.debug('Series list before removal:', Globals.Variables.measurementRoiSeriesList)
+                    Globals.BackendWrapper.measurementRemove(tableView.model[index].name)
+                    console.debug("Measurement ROI rect list after removal:", Globals.Variables.measurementRoiRectList);
+                    console.debug("Measurement ROI series list after removal:", Globals.Variables.measurementRoiSeriesList);
+                }
             }
             mouseArea.onPressed: {
-                console.debug(`Changing active measurement to: ${tableView.model[index].name}`)
-                Globals.BackendWrapper.changeActiveMeasurement(tableView.model[index].name)
-                Globals.References.pages.measurement.sidebar.basic.groups.timeFrameSlider.slider.value = 0
+                if (Globals.BackendWrapper.activeMeasurementIndex != index) {
+                    console.debug(`Changing active measurement to: ${tableView.model[index].name}`)
+                    // for (var i=0; i < Globals.Variables.measurementRoiRectList[Globals.BackendWrapper.activeMeasurementIndex].length; i++) {
+                    //     Globals.Variables.measurementRoiRectList[Globals.BackendWrapper.activeMeasurementIndex][i].visible = false;
+                    //     console.debug(' Removing Series:' + Globals.Variables.measurementRoiSeriesList[Globals.BackendWrapper.activeMeasurementIndex][i])
+                    //     Globals.References.pages.measurement.mainContent.views.spectrumView.removeSeries(0);
+                    // }
+                    Globals.BackendWrapper.changeActiveMeasurement(tableView.model[index].name)
+                    Globals.References.pages.measurement.sidebar.basic.groups.timeFrameSlider.slider.value = 0
+                }
             }
         }
         // Table rows
@@ -109,5 +122,45 @@ Column {
         Loader {
             source: '../Popups/OpenMeasurementFile.qml'
         }
+
+        Connections {
+            target: Globals.BackendWrapper.activeBackend.measurements
+            function onMeasurementCreated() {
+                Globals.Variables.measurementRoiRectList.push([]);
+                Globals.Variables.measurementRoiSeriesList.push([]);
+            }
+        }
+        Connections {
+            target: Globals.BackendWrapper.activeBackend.measurements
+            function onMeasurementDeleted(index) {
+                for (var i=0; i < Globals.Variables.measurementRoiRectList[index].length; i++) {
+                    Globals.Variables.measurementRoiRectList[index][i].destroy()
+                }
+                Globals.Variables.measurementRoiRectList.splice(index, 1);
+                Globals.Variables.measurementRoiSeriesList.splice(index, 1);
+            }
+        }
+        Connections {
+            target: Globals.BackendWrapper.activeBackend.measurements
+            function onActiveMeasurementChanged(oldIndex) {
+                console.debug('MeasurementRoiRectList:' + Globals.Variables.measurementRoiRectList)
+                console.debug('Length of MeasurementRoiRectList:' + Globals.Variables.measurementRoiRectList[Globals.BackendWrapper.activeMeasurementIndex].length)
+                // Remove old active measurement from views
+                for (var i=0; i < Globals.Variables.measurementRoiRectList[oldIndex].length; i++) {
+                        Globals.Variables.measurementRoiRectList[oldIndex][i].visible = false;
+                        console.debug(' Removing Series:' + Globals.Variables.measurementRoiSeriesList[oldIndex][i])
+                        Globals.References.pages.measurement.mainContent.views.spectrumView.removeSeries(0);
+                    }
+                
+                for (var i=0; i < Globals.Variables.measurementRoiRectList[Globals.BackendWrapper.activeMeasurementIndex].length; i++) {
+                    Globals.Variables.measurementRoiRectList[Globals.BackendWrapper.activeMeasurementIndex][i].visible = true;
+                    console.debug(' Adding Series:' + Globals.Variables.measurementRoiSeriesList[Globals.BackendWrapper.activeMeasurementIndex][i])
+                    Globals.References.pages.measurement.mainContent.views.spectrumView.addSeries(
+                        Globals.Variables.measurementRoiSeriesList[Globals.BackendWrapper.activeMeasurementIndex][i]
+                    );
+                }
+            }
+        }
+
     }
 }

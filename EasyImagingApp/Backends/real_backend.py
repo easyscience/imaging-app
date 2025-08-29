@@ -59,6 +59,8 @@ class Backend(QObject):
         self._measurements.activeMeasurementChanged.connect(self._measurements.timeFrameChanged)
         self._measurements.activeMeasurementChanged.connect(self._measurements.ROIListChanged)
         self._measurements.timeFrameChanged.connect(self._measurements.imageSourceChanged)
+        self._measurements.measurementCreated.connect(self._measurements.measurementExistsChanged)
+        self._measurements.measurementDeleted.connect(self._measurements.measurementExistsChanged)
 
 
     ##########################

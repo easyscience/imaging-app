@@ -61,8 +61,9 @@ QtObject {
     // Measurement page
     ///////////////
 
-    readonly property bool measurementCreated: activeBackend.measurements.measurementCreated
+    readonly property bool measurementExists: activeBackend.measurements.measurementExists
     readonly property string activeMeasurement: activeBackend.measurements.activeMeasurement
+    readonly property int activeMeasurementIndex: activeBackend.measurements.activeMeasurementIndex
     readonly property string imageSource: activeBackend.measurements.imageSource
     readonly property var measurementsList: activeBackend.measurements.measurementsList
     readonly property int timeBins: activeBackend.measurements.timeBins
@@ -75,14 +76,11 @@ QtObject {
 
     function changeActiveMeasurement(string) { activeBackend.measurements.changeActiveMeasurement(string) }
     function measurementLoad(string) {activeBackend.measurements.load(string)}
-    function measurementRemove(index) { activeBackend.measurements.removeMeasurement(index) }
+    function measurementRemove(string) { activeBackend.measurements.removeMeasurement(string) }
     function createROI(relative_startX, relative_startY, relative_endX, relative_endY) {
         activeBackend.measurements.createROI(relative_startX, relative_startY, relative_endX, relative_endY)
     }
     function removeROI(index) { activeBackend.measurements.removeROI(index) }
-    // function getTestSeries() {
-    //     Qt.createQmlObject(activeBackend.measurements.lineSeriesString, Globals.References.pages.measurement.mainContent.views.spectrumView);
-    // }
     function plotSpectrum(index) {
         activeBackend.measurements.plotSpectrum(index)
     }

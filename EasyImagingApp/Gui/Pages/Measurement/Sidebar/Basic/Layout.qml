@@ -22,7 +22,7 @@ EaComponents.SideBarColumn {
     }
 
     EaElements.GroupBox {
-        visible: Globals.BackendWrapper.measurementCreated
+        visible: Globals.BackendWrapper.measurementExists
         title: qsTr('Time frame')
         icon: 'layer-group'
         collapsed: false
@@ -31,7 +31,7 @@ EaComponents.SideBarColumn {
     }
 
     EaElements.GroupBox {
-        visible: Globals.BackendWrapper.measurementCreated
+        visible: Globals.BackendWrapper.measurementExists
         title: qsTr('Regions of Interest')
         icon: 'crop-simple'
         collapsed: false

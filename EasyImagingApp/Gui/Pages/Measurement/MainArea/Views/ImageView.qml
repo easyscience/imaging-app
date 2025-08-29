@@ -91,7 +91,8 @@ Image {
                  }`,
                 roiRectArea
             );
-            imageView.roiList.push(newRect);
+            Globals.Variables.measurementRoiRectList[Globals.BackendWrapper.activeMeasurementIndex].push(newRect);
+            console.debug("ROI Rect List after adding new rect:", Globals.Variables.measurementRoiRectList);
         }
 
         Rectangle {

@@ -15,7 +15,7 @@ import Gui.Globals as Globals
 
 EaComponents.ContentPage {
 
-    defaultInfo: Globals.BackendWrapper.measurementCreated ?
+    defaultInfo: Globals.BackendWrapper.measurementExists ?
                      '' :
                      qsTr('No measurements imported yet')
 

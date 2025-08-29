@@ -10,9 +10,11 @@ from .logic.project import Project as ProjectLogic
 from .temp.project import Project as ProjectLib
 
 class Measurements(QObject):
-    activeMeasurementChanged = Signal()
+    activeMeasurementChanged = Signal(int)
     measurementListChanged = Signal()
-    measurementCreatedChanged = Signal()
+    measurementCreated = Signal()
+    measurementDeleted = Signal(int)
+    measurementExistsChanged = Signal()
     imageSourceChanged = Signal()
     timeBinsChanged = Signal()
     timeFrameChanged = Signal()
@@ -39,13 +41,21 @@ class Measurements(QObject):
             return 'image://easyimage/' + self._project_logic.active_measurement.name + '_' + str(self._project_logic.time_frame)
 
     @Property(str, notify=activeMeasurementChanged)
-    def activeMeasurement(self):
+    def activeMeasurement(self) -> str:
         """
         Returns the name of the active measurement in the image provider.
         This is used in the QML code to display the image.
         """
         if self._project_logic.active_measurement:
             return self._project_logic.active_measurement.name
+        
+    @Property(int, notify=activeMeasurementChanged)
+    def activeMeasurementIndex(self) -> int:
+        """
+        Returns the index of the active measurement in the list of measurements.
+        """
+        if self._project_logic.active_measurement:
+            return self._project_logic.get_measurements().index(self._project_logic.active_measurement)
 
     @Property(int, notify=timeBinsChanged)
     def timeBins(self) -> int:
@@ -83,8 +93,8 @@ class Measurements(QObject):
         else:
             raise ValueError("No active measurement set.")
 
-    @Property(bool, notify=measurementCreatedChanged)
-    def measurementCreated(self) -> bool:
+    @Property(bool, notify=measurementExistsChanged)
+    def measurementExists(self) -> bool:
         """
         Returns True if any measurement has been created.
         """
@@ -143,10 +153,12 @@ class Measurements(QObject):
     # Actions
     @Slot(str)
     def load(self, path: str) -> None:
+        old_active_measurement_index = self.activeMeasurementIndex
         self._project_logic.add_measurement_from_file(file_path=IO.generalizePath(path))
-        self.activeMeasurementChanged.emit()
+        self.measurementCreated.emit()
+        self.activeMeasurementChanged.emit(old_active_measurement_index)
         self.measurementListChanged.emit()
-        self.measurementCreatedChanged.emit()
+
 
     @Slot(str)
     def changeActiveMeasurement(self, name: str) -> None:
@@ -154,19 +166,21 @@ class Measurements(QObject):
         Changes the active measurement in the image provider.
         The name is the name of the measurement in the list of measurements.
         """
+        old_active_measurement_index = self.activeMeasurementIndex
         self._project_logic.active_measurement = name
-        self.activeMeasurementChanged.emit()
+        self.activeMeasurementChanged.emit(old_active_measurement_index)
 
     @Slot(int)
-    def removeMeasurement(self, index: int) -> None:
+    def removeMeasurement(self, name: str) -> None:
         """
         Removes a measurement from the project.
-        The index is the index of the measurement in the list of measurements.
+        The name is the name of the measurement in the list of measurements.
         """
+        if name == self._project_logic.active_measurement.name:
+            self.changeActiveMeasurement(self._project_logic.get_measurements()[0].name)
         self._project_logic.remove_measurement(index)
-        self.activeMeasurementChanged.emit()
         self.measurementListChanged.emit()
-        self.measurementCreatedChanged.emit()
+        self.measurementDeleted.emit(index)
 
     @Slot(float, float, float, float)
     def createROI(self, relative_startX: float, relative_startY: float, relative_endX: float, relative_endY: float) -> None:
