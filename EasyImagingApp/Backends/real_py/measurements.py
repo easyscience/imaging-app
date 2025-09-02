@@ -171,14 +171,21 @@ class Measurements(QObject):
         self.activeMeasurementChanged.emit(old_active_measurement_index)
 
     @Slot(int)
-    def removeMeasurement(self, name: str) -> None:
+    def removeMeasurement(self, index: int) -> None:
         """
         Removes a measurement from the project.
-        The name is the name of the measurement in the list of measurements.
+        The index is the index of the measurement in the list of measurements.
         """
-        if name == self._project_logic.active_measurement.name:
-            self.changeActiveMeasurement(self._project_logic.get_measurements()[0].name)
+        change = False
+        name = self._project_logic.get_measurements()[index].name
+        console.debug(f'Removing measurement: {name} at index {index}')
+        console.debug(f'Current active measurement: {self._project_logic.active_measurement.name if self._project_logic.active_measurement else "None"}')
+        if len(self._project_logic.get_measurements()) > 1 and self._project_logic.active_measurement.name == name:
+            change = True
         self._project_logic.remove_measurement(index)
+        if change:
+            console.debug('emitting activeMeasurementChanged')
+            self.activeMeasurementChanged.emit(index)
         self.measurementListChanged.emit()
         self.measurementDeleted.emit(index)
 

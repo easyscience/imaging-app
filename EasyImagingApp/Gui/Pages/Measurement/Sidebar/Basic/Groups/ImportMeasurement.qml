@@ -84,9 +84,10 @@ Column {
                 fontIcon: "minus-circle"
                 ToolTip.text: qsTr("Remove this measurement")
                 onClicked: {
+                    console.debug('Current active measurement index:', Globals.BackendWrapper.activeMeasurementIndex)
                     console.debug('Rect list before removal:', Globals.Variables.measurementRoiRectList)
                     console.debug('Series list before removal:', Globals.Variables.measurementRoiSeriesList)
-                    Globals.BackendWrapper.measurementRemove(tableView.model[index].name)
+                    Globals.BackendWrapper.measurementRemove(index)
                     console.debug("Measurement ROI rect list after removal:", Globals.Variables.measurementRoiRectList);
                     console.debug("Measurement ROI series list after removal:", Globals.Variables.measurementRoiSeriesList);
                 }
@@ -144,7 +145,6 @@ Column {
             target: Globals.BackendWrapper.activeBackend.measurements
             function onActiveMeasurementChanged(oldIndex) {
                 console.debug('MeasurementRoiRectList:' + Globals.Variables.measurementRoiRectList)
-                console.debug('Length of MeasurementRoiRectList:' + Globals.Variables.measurementRoiRectList[Globals.BackendWrapper.activeMeasurementIndex].length)
                 // Remove old active measurement from views
                 for (var i=0; i < Globals.Variables.measurementRoiRectList[oldIndex].length; i++) {
                         Globals.Variables.measurementRoiRectList[oldIndex][i].visible = false;

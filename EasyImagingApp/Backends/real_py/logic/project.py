@@ -44,6 +44,7 @@ class Project():
 
     def remove_measurement(self, index: int) -> None:
         """Remove a measurement from the project by index."""
+        console.debug(f"Current active measurement before removal: {self.active_measurement.name if self.active_measurement else 'None'}")
         measurement = self._project_lib.get_measurements().pop(index)
         name = measurement.name
         for frame in range(self.number_of_time_bins):
@@ -60,6 +61,7 @@ class Project():
     @property
     def active_measurement(self):
         """Get the active measurement."""
+        # console.debug(f"Getting active measurement: {self._active_measurement.name if self._active_measurement else 'None'}")
         return self._active_measurement
     
     @active_measurement.setter
