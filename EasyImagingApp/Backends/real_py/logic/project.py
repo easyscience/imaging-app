@@ -17,7 +17,7 @@ class Project():
     def add_measurement_from_file(self, file_path: str) -> None:
         """Create a new measurement from a file and add it to the project."""
         self._project_lib.add_measurement_from_file(file_path)
-        measurement = self._project_lib.get_measurements()[-1]
+        measurement = self.get_measurements()[-1]
         data_array = measurement.data_array
         name = measurement.name
         # Rescale and add the measurement image to the image provider
@@ -123,7 +123,7 @@ class Project():
 
         points = [f'XYPoint {{ x: {times[i]}; y: {intensities[i]} }}' for i in range(len(times))]
         
-        begining_string = """import QtGraphs;
+        beginning_string = """import QtGraphs;
             import Gui.Globals as Globals;
             import QtQuick;
             LineSeries {
@@ -133,7 +133,7 @@ class Project():
                 console.debug('Spectrum series destroyed');
             }"""
         console.debug(f"Creating line series with {len(points)} points.")
-        return begining_string + '\n'.join(points) + end_string + "}"
+        return beginning_string + '\n'.join(points) + end_string + "}"
 
     def create_ROI(self, relative_startX: float, relative_startY: float, relative_endX: float, relative_endY: float) -> None:
         """

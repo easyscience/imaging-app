@@ -13,8 +13,8 @@ class EasyImageProvider(QQuickImageProvider):
         self.name = 'easyimage'
 
         """Image provider data."""
-        self._images: dict[str, np.ndarray] = dict()
- 
+        self._images: dict[str, np.ndarray] = {}
+
         """Suggested utility objects."""
         # self.SharedConstants = SharedConstants()
         # self._imageConstructor = ImageConstructor()
@@ -73,7 +73,10 @@ class EasyImageProvider(QQuickImageProvider):
     
     def removeLayer(self, layer_id: str) -> None:
         """Apply key-value pair deletion logic"""
-        del self._images[layer_id]
+        if layer_id in self._images.keys():
+            del self._images[layer_id]
+        else:
+            console.debug(f"Layer id '{layer_id}' not found in image provider.")
 
     def getLayers(self) -> list[str]:
         """Return the list of layer ids."""

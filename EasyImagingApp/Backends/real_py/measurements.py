@@ -39,6 +39,8 @@ class Measurements(QObject):
         """
         if self._project_logic.active_measurement:
             return 'image://easyimage/' + self._project_logic.active_measurement.name + '_' + str(self._project_logic.time_frame)
+        else:
+            return None
 
     @Property(str, notify=activeMeasurementChanged)
     def activeMeasurement(self) -> str:
@@ -154,7 +156,7 @@ class Measurements(QObject):
     @Slot(str)
     def load(self, path: str) -> None:
         old_active_measurement_index = self.activeMeasurementIndex
-        self._project_logic.add_measurement_from_file(file_path=IO.generalizePath(path))
+        self._project_logic.add_measurement_from_file(file_path=IO.generalize_path(path))
         self.measurementCreated.emit()
         self.activeMeasurementChanged.emit(old_active_measurement_index)
         self.measurementListChanged.emit()
