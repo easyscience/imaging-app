@@ -48,8 +48,8 @@ EaComponents.ContentPage {
 
         continueButton.onClicked: {            
             console.debug(`Clicking '${continueButton.text}' button ::: ${this}`)
-            Globals.References.applicationWindow.appBarCentralTabs.summaryButton.enabled = true
-            Globals.References.applicationWindow.appBarCentralTabs.summaryButton.toggle()
+            Globals.References.applicationWindow.appBarCentralTabs.measurementButton.enabled = true
+            Globals.References.applicationWindow.appBarCentralTabs.measurementButton.toggle()
         }
     }
 

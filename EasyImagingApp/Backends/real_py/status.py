@@ -3,22 +3,22 @@
 # © 2024 Contributors to the EasyApp project <https://github.com/easyscience/EasyApp>
 
 from PySide6.QtCore import QObject, Signal, Property
-
+from .temp.project import Project as ProjectLib
 
 class Status(QObject):
     projectChanged = Signal()
     phasesCountChanged = Signal()
-    experimentsCountChanged = Signal()
+    measurementsCountChanged = Signal()
     calculatorChanged = Signal()
     minimizerChanged = Signal()
     variablesChanged = Signal()
 
-    def __init__(self):
+    def __init__(self, project_lib : ProjectLib):
         super().__init__()
         self._project = 'Undefined'
-        self._phasesCount = '1'
-        self._experimentsCount = '1'
-        self._calculator = 'CrysPy'
+        self._phasesCount = '0'
+        self._measurementsCount = '0'
+        self._calculator = 'NCrystal'
         self._minimizer = 'Lmfit (leastsq)'
         self._variables = '31 (3 free, 28 fixed)'
 
@@ -48,16 +48,16 @@ class Status(QObject):
         self._phasesCount = new_value
         self.phasesCountChanged.emit()
 
-    @Property(str, notify=experimentsCountChanged)
-    def experimentsCount(self):
-        return self._experimentsCount
+    @Property(str, notify=measurementsCountChanged)
+    def measurementsCount(self):
+        return self._measurementsCount
 
-    @experimentsCount.setter
-    def experimentsCount(self, new_value):
-        if self._experimentsCount == new_value:
+    @measurementsCount.setter
+    def measurementsCount(self, new_value):
+        if self._measurementsCount == new_value:
             return
-        self._experimentsCount = new_value
-        self.experimentsCountChanged.emit()
+        self._measurementsCount = new_value
+        self.measurementsCountChanged.emit()
 
     @Property(str, notify=calculatorChanged)
     def calculator(self):

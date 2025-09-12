@@ -6,7 +6,6 @@ pragma Singleton
 
 import QtQuick
 
-
 // Initialisation of the reference dictionary. It is filled in later, when the required object is
 // created and its unique id is assigned and added here instead of 'null'. After that, any object
 // whose id is stored here can be accessed from any other qml file.
@@ -17,6 +16,7 @@ QtObject {
         'appBarCentralTabs': {
             'homeButton': null,
             'projectButton': null,
+            'measurementButton': null,
             'summaryButton': null,
         }
     }
@@ -27,11 +27,31 @@ QtObject {
             'sidebar': {
                 'basic': {
                     'popups': {
-                        'openCifFile': null
+                        'openTiffFileDialog': null
                     }
                 }
             }
-        }
+        },
+        'measurement':{
+            'mainContent': {
+                'views': {
+                    'spectrumView': null,
+                    'imageView': null,
+                    'imageViewAxes': null,
+                },
+            },
+            'sidebar': {
+                'basic': {
+                    'groups': {
+                        'timeFrameSlider': {
+                            'slider': null,
+                        },
+                    },
+                    'popups': {
+                        'openMeasurementFileDialog': null,
+                    },
+                },
+            },
+        },
     }
-
 }

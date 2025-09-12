@@ -5,7 +5,8 @@
 from pathlib import Path
 import sys
 
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtWidgets import QApplication
+# from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterSingletonType
 from PySide6.QtCore import qInstallMessageHandler
 
@@ -13,11 +14,11 @@ from PySide6.QtCore import qInstallMessageHandler
 # If this is not the case, and if the example is run from the EasyApp repository, one need to add the path to the
 # EasyApp source code.
 CURRENT_DIR = Path(__file__).parent  # path to qml components of the current project
-EASYAPP_DIR = CURRENT_DIR / '..' / '..' / '..' / '..' / 'src'  # path to qml components of the easyapp module
-sys.path.append(str(EASYAPP_DIR))
+#EASYAPP_DIR = CURRENT_DIR / '..' / '..' / 'EasyApp' / 'src'  # path to qml components of the easyapp module
+#sys.path.append(str(EASYAPP_DIR))
 
 from EasyApp.Logic.Logging import console
-
+from Backends.imageprovider import EasyImageProvider
 from Backends.real_backend import Backend
 
 
@@ -28,18 +29,26 @@ if __name__ == '__main__':
     # This singleton object will be accessible in QML as follows:
     # import Backends 1.0 as Backends OR import Backends as Backends
     # property var activeBackend: Backends.PyBackend
+    ### ------------------------------------------------------------###
+    # Commen out the following line to use the MockBackend
+    ### ------------------------------------------------------------###
     qmlRegisterSingletonType(Backend, 'Backends', 1, 0, 'PyBackend')
     console.debug('Backend class is registered as a singleton type for QML')
 
-    app = QGuiApplication(sys.argv)
+    app = QApplication(sys.argv)
     console.debug(f'Qt Application created {app}')
 
     engine = QQmlApplicationEngine()
     console.debug(f'QML application engine created {engine}')
 
     engine.addImportPath(CURRENT_DIR)
-    engine.addImportPath(EASYAPP_DIR)
+    engine.addImportPath(CURRENT_DIR / '..' / '..' / 'EasyApp' / 'src')
+    #engine.addImportPath(EASYAPP_DIR)
     console.debug('Paths added where QML searches for components')
+
+    # Add the image provider to the engine
+    image_provider = EasyImageProvider()
+    engine.addImageProvider(image_provider.name, image_provider)
 
     engine.load(CURRENT_DIR / 'main.qml')
     console.debug('Main QML component loaded')

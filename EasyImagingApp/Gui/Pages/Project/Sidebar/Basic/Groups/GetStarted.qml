@@ -43,11 +43,11 @@ Grid {
 
         onClicked: {
             console.debug(`Clicking '${text}' button ::: ${this}`)
-            Globals.References.pages.project.sidebar.basic.popups.openCifFile.open()
+            Globals.References.pages.project.sidebar.basic.popups.openTiffFileDialog.open()
         }
 
         Loader {
-            source: '../Popups/OpenCifFile.qml'
+            source: '../Popups/OpenTiffFile.qml'
         }
     }
     // button 2

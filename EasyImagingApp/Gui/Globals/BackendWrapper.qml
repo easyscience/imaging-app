@@ -11,7 +11,7 @@ import QtQuick
 // If ‘PyBackend’ is not defined, then 'MockBackend' from directory 'Backends' is used.
 // It is needed to run the GUI frontend via the qml runtime tool without any Python backend.
 import Backends as Backends
-
+import Gui.Globals as Globals
 
 QtObject {
 
@@ -35,7 +35,7 @@ QtObject {
 
     readonly property string statusProject: activeBackend.status.project
     readonly property string statusPhasesCount: activeBackend.status.phasesCount
-    readonly property string statusExperimentsCount: activeBackend.status.experimentsCount
+    readonly property string statusMeasurementsCount: activeBackend.status.measurementsCount
     readonly property string statusCalculator: activeBackend.status.calculator
     readonly property string statusMinimizer: activeBackend.status.minimizer
     readonly property string statusVariables: activeBackend.status.variables
@@ -55,6 +55,36 @@ QtObject {
     function projectCreate() { activeBackend.project.create() }
     function projectSave() { activeBackend.project.save() }
     function projectEditInfo(path, new_value) { activeBackend.project.editInfo(path, new_value) }
+    function projectLoad(file_path) { activeBackend.project.load(file_path) }
+
+    ///////////////
+    // Measurement page
+    ///////////////
+
+    readonly property bool measurementExists: activeBackend.measurements.measurementExists
+    readonly property string activeMeasurement: activeBackend.measurements.activeMeasurement
+    readonly property int activeMeasurementIndex: activeBackend.measurements.activeMeasurementIndex
+    readonly property string imageSource: activeBackend.measurements.imageSource
+    readonly property var measurementsList: activeBackend.measurements.measurementsList
+    readonly property int timeBins: activeBackend.measurements.timeBins
+    property int timeFrame: activeBackend.measurements.timeFrame
+    onTimeFrameChanged: activeBackend.measurements.timeFrame = timeFrame
+    readonly property var roiList: activeBackend.measurements.roiList
+    readonly property var maxIntensity: activeBackend.measurements.maxIntensity
+    readonly property var minTime: activeBackend.measurements.minTime
+    readonly property var maxTime: activeBackend.measurements.maxTime
+
+    function changeActiveMeasurement(string) { activeBackend.measurements.changeActiveMeasurement(string) }
+    function measurementLoad(string) {activeBackend.measurements.load(string)}
+    function measurementRemove(string) { activeBackend.measurements.removeMeasurement(string) }
+    function createROI(relative_startX, relative_startY, relative_endX, relative_endY) {
+        activeBackend.measurements.createROI(relative_startX, relative_startY, relative_endX, relative_endY)
+    }
+    function removeROI(index) { activeBackend.measurements.removeROI(index) }
+    function plotSpectrum(index) {
+        activeBackend.measurements.plotSpectrum(index)
+    }
+
 
     ///////////////
     // Summary page

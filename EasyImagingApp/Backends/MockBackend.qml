@@ -13,6 +13,7 @@ QtObject {
 
     property var project: MockLogic.Project
     property var status: MockLogic.Status
+    property var measurement: MockLogic.Measurement
     property var report: MockLogic.Report
 
 }
