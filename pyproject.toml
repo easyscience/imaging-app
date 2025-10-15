@@ -6,7 +6,7 @@ build-backend = 'hatchling.build'
 [project]
 name = 'EasyImagingApp'
 version = '1.0.0'
-description = 'Example of a desktop application of advanced complexity with Python backend and EasyApp-based GUI'
+description = 'The graphical user-interface of EasyImaging'
 authors = [
   {name = 'Christian Dam Vedel', email = 'christian.vedel@ess.eu'}
 ]
