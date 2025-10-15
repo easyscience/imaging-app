@@ -1,0 +1,62 @@
+name: Build installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build_pyinstaller:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      # Build on the following 4 configurations: 
+      # 1. <Windows, Release, 2022 MSVC compiler toolchain>
+      # 2. <Ubuntu latest, i.e. version 22.04, Release, GCC 11 compiler toolchain>
+      # 3. <MacOS 12 with x86-64 arch, Release, Clang 14 compiler toolchain>
+      # 4. <MacOS 14 with arm64 arch, Release, Clang 15 compiler toolchain
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the list.
+      matrix:
+        os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
+
+    steps:
+    - name: Checkout EasyImaginApp
+      uses: actions/checkout@v5
+      with:
+        path: imaging-app
+
+    - name: Checkout EasyApp
+      uses: actions/checkout@v5
+      with:
+        repository: EasyScience/EasyApp
+        ref: 'Fix_wrong_application_types'
+        path: EasyApp
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install uv
+      run: |
+          python -m pip install --upgrade pip
+          pip install uv
+
+    - name: Install dependencies
+      shell: bash
+      run: uv pip install -r imaging-app/pyproject.toml --extra ci
+
+    - name: Build with pyinstaller
+      shell: bash
+      run: |
+        pyinstaller imaging-app/EasyImagingApp/main.py --onedir --name EasyImaging --icon imaging-app\EasyImagingApp\Gui\Resources\Logos\App.ico \
+        --add-data=EasyImagingApp:. --collect-all PySide6 --collect-all scitiff --collect-all easyscience --collect-all EasyApp
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with: 
+        path: dist/EasyImaging
+        name: EasyImaging-${{ matrix.os }}
