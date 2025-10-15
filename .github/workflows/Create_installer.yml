@@ -51,13 +51,14 @@ jobs:
       run: uv pip install -r imaging-app/pyproject.toml --extra ci --system
 
     - name: Build with pyinstaller
+      working-directory: imaging-app
       shell: bash
       run: |
-        pyinstaller imaging-app/EasyImagingApp/main.py --onedir --name EasyImaging --icon imaging-app\EasyImagingApp\Gui\Resources\Logos\App.ico \
+        pyinstaller EasyImagingApp/main.py --onedir --name EasyImaging --icon EasyImagingApp/Gui/Resources/Logos/App.ico \
         --add-data=EasyImagingApp:. --collect-all PySide6 --collect-all scitiff --collect-all easyscience --collect-all EasyApp
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with: 
-        path: dist/EasyImaging
+        path: imaging-app/dist/EasyImaging
         name: EasyImaging-${{ matrix.os }}
