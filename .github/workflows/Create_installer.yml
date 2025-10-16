@@ -54,13 +54,15 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xfixes0 libxcb-shape0 libxcb-cursor0
+        sudo apt-get install libxkbcommon-x11-dev libpulse0
+        # sudo apt-get install libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 libxcb-cursor0 libpulse0
 
     - name: Build with pyinstaller
       working-directory: imaging-app
       shell: bash
       run: |
         pyinstaller EasyImagingApp/main.py --onedir --windowed --name EasyImaging --icon EasyImagingApp/Gui/Resources/Logos/App.ico \
+        --clean --noconfirm  \
         --add-data=EasyImagingApp:. --collect-all PySide6 --collect-all scitiff --collect-all easyscience --collect-all EasyApp
 
     - name: Upload artifact
