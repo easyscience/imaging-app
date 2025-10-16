@@ -55,7 +55,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install libxkbcommon-x11-dev libpulse0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0
-        # sudo apt-get install libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 libxcb-cursor0 libpulse0
 
     - name: Downgrade pyinstaller (MacOS)
       if: runner.os == 'macOS'
@@ -74,3 +73,13 @@ jobs:
       with: 
         path: imaging-app/dist/EasyImaging
         name: EasyImaging-${{ matrix.os }}
+
+    # - name: Create installers
+    #   working-directory: imagingsuite/QtInstaller
+    #   shell: bash
+    #   run: |
+    #     if [ "${RUNNER_OS}" == "Windows" ]; then
+    #       ${QTPATH}/../../Tools/QtInstallerFramework/4.8/bin/binarycreator.exe -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer.exe
+    #     else
+    #       ${QTPATH}/../../Tools/QtInstallerFramework/4.8/bin/binarycreator -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer
+    #     fi

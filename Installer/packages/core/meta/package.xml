@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>EasyImaging core components</DisplayName>
+    <Name>core</Name>
+    <Description>The core components critical to running EasyImaging</Description>
+    <Version>0.0.1</Version>
+    <ReleaseDate>2025-10-16</ReleaseDate>
+    <Licenses>
+        <License name="GNU GENERAL PUBLIC LICENSE" file="LICENSE" />
+    </Licenses>
+    <Default>false</Default>
+    <ForcedInstallation>true</ForcedInstallation>
+    <Script>installscript.js</Script>
+    <UserInterfaces>
+        <UserInterface>customintroductionpage.ui</UserInterface>
+        <UserInterface>shortcutwidget.ui</UserInterface>
+        <UserInterface>symlinkwidget.ui</UserInterface>
+    </UserInterfaces>
+</Package>
