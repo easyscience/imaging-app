@@ -50,11 +50,17 @@ jobs:
       shell: bash
       run: uv pip install -r imaging-app/pyproject.toml --extra ci --system
 
+    - name: Install needed libraries (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xfixes0 libxcb-shape0 libxcb-cursor0
+
     - name: Build with pyinstaller
       working-directory: imaging-app
       shell: bash
       run: |
-        pyinstaller EasyImagingApp/main.py --onedir --name EasyImaging --icon EasyImagingApp/Gui/Resources/Logos/App.ico \
+        pyinstaller EasyImagingApp/main.py --onedir --windowed --name EasyImaging --icon EasyImagingApp/Gui/Resources/Logos/App.ico \
         --add-data=EasyImagingApp:. --collect-all PySide6 --collect-all scitiff --collect-all easyscience --collect-all EasyApp
 
     - name: Upload artifact
