@@ -50,15 +50,24 @@ jobs:
       shell: bash
       run: uv pip install -r imaging-app/pyproject.toml --extra ci --system
 
+    - name: Downgrade pyinstaller (MacOS)
+      if: runner.os == 'macOS'
+      run: uv pip install 'pyinstaller<6.0' --system
+
+    - name: Install Qt Installer Framework
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.9.*'
+        dir: '${{GITHUB.WORKSPACE}}'
+        install-deps: 'true'
+        tools: 'tools_ifw'
+        no-qt-binaries: 'true'
+
     - name: Install needed libraries (Linux)
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
         sudo apt-get install libxkbcommon-x11-dev libpulse0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0
-
-    - name: Downgrade pyinstaller (MacOS)
-      if: runner.os == 'macOS'
-      run: uv pip install 'pyinstaller<6.0' --system
 
     - name: Build with pyinstaller
       working-directory: imaging-app
@@ -74,12 +83,24 @@ jobs:
         path: imaging-app/dist/EasyImaging
         name: EasyImaging-${{ matrix.os }}
 
-    # - name: Create installers
-    #   working-directory: imagingsuite/QtInstaller
-    #   shell: bash
-    #   run: |
-    #     if [ "${RUNNER_OS}" == "Windows" ]; then
-    #       ${QTPATH}/../../Tools/QtInstallerFramework/4.8/bin/binarycreator.exe -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer.exe
-    #     else
-    #       ${QTPATH}/../../Tools/QtInstallerFramework/4.8/bin/binarycreator -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer
-    #     fi
+    - name: Prepare creation of installer
+      working-directory: imaging-app/Installer
+      shell: bash
+      run: |
+        cp -r ../dist/EasyImaging/* packages/core/data/
+
+    - name: Create installers
+      working-directory: imagingsuite/QtInstaller
+      shell: bash
+      run: |
+        if [ "${RUNNER_OS}" == "Windows" ]; then
+          ${{env.QT_ROOT_DIR}}/../../Tools/QtInstallerFramework/4.10/bin/binarycreator.exe -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer.exe
+        else
+          ${{env.QT_ROOT_DIR}}/../../Tools/QtInstallerFramework/4.10/bin/binarycreator -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer
+        fi
+
+    - name: Upload installers
+      uses: actions/upload-artifact@master
+      with:
+        name: EasyImaging-installer-${{runner.os}}-${{runner.arch}}
+        path: imaging-app/Installer/*EasyImaging_Installer*
