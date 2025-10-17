@@ -63,6 +63,18 @@ jobs:
         tools: 'tools_ifw'
         no-qt-binaries: 'true'
 
+    - name: Test paths
+      shell: bash
+      run: |
+        cd ${{env.QT_ROOT_DIR}}
+        pwd
+        ls -a
+        cd ..
+        ls -a
+        cd ..
+        ls -a
+        pwd
+
     - name: Build with pyinstaller
       working-directory: imaging-app
       shell: bash
