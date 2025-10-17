@@ -57,7 +57,7 @@ jobs:
     - name: Install Qt Installer Framework
       uses: jurplel/install-qt-action@v4
       with:
-        version: '6.9.*'
+        version: '6.9.3'
         dir: '${{GITHUB.WORKSPACE}}'
         install-deps: 'true'
         tools: 'tools_ifw'
