@@ -83,15 +83,17 @@ jobs:
       run: |
         cp -r ../dist/EasyImaging/* packages/core/data/
 
-    - name: Create installers
-      working-directory: imaging-app/Installer
-      shell: bash
+    - name: Create installers (Windows)
+      if: runner.os == 'Windows'
+      working-directory: imaging-app\Installer
       run: |
-        if [ "${RUNNER_OS}" == "Windows" ]; then
-          ${{env.IQTA_TOOLS}}/QtInstallerFramework/4.7/bin/binarycreator.exe -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer.exe
-        else
-          ${{env.IQTA_TOOLS}}/QtInstallerFramework/4.7/bin/binarycreator -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer
-        fi
+        ${{env.IQTA_TOOLS}}\QtInstallerFramework\4.7\bin\binarycreator.exe -c config\config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer.exe
+
+    - name: Create installers (Linux & MacOS)
+      if: runner.os != 'Windows'
+      working-directory: imaging-app/Installer
+      run: |
+        ${{env.IQTA_TOOLS}}/QtInstallerFramework/4.7/bin/binarycreator -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer
 
     - name: Upload installers
       uses: actions/upload-artifact@master
