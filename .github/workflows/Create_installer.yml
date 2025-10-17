@@ -63,6 +63,18 @@ jobs:
         tools: 'tools_ifw'
         no-qt-binaries: 'true'
 
+    - name: Check paths
+      shell: bash
+      run: |
+        cd ${{env.IQTA_TOOLS}}
+        ls
+        cd QtInstallerFramework
+        ls
+        cd 4.10
+        ls
+        cd bin
+        ls
+
     - name: Build with pyinstaller
       working-directory: imaging-app
       shell: bash
