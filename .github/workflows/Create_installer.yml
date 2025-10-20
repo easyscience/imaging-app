@@ -21,7 +21,8 @@ jobs:
       # 4. <MacOS 14 with arm64 arch, Release, Clang 15 compiler toolchain
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the list.
       matrix:
-        os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
+        # os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
+        os: [windows-2022]
 
     steps:
     - name: Checkout EasyImaginApp
@@ -94,6 +95,30 @@ jobs:
       working-directory: imaging-app/Installer
       run: |
         ${{env.IQTA_TOOLS}}/QtInstallerFramework/4.7/bin/binarycreator -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer
+
+    - name: Install DigiCert Client tools from Github Custom Actions marketplace
+      if: runner.os == 'windows'
+      uses: digicert/ssm-code-signing@v1.1.0
+
+    - name: Set up P12 certificate
+      if: runner.os == 'windows'
+      shell: bash
+      run: echo "${{ secrets.WINDOWS_CERT_DATA }}" | base64 --decode > /d/Certificate_pkcs12.p12
+
+    - name: Set keylocker variables
+      if: runner.os == 'windows'
+      shell: bash
+      run: |
+        echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        echo "SM_HOST=${{ secrets.KEYLOCKER_HOST }}" >> "$GITHUB_ENV"
+        echo "SM_API_KEY=${{ secrets.KEYLOCKER_API_KEY }}" >> "$GITHUB_ENV"
+        echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
+        echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.WINDOWS_CERT_PASSWORD }}" >> "$GITHUB_ENV"
+
+    - name: Sign the binary using keypair alias
+      if: runner.os == 'windows'
+      shell: cmd
+      run: smctl sign --keypair-alias key_911959544 --input imaging-app\Installer\*EasyImaging_Installer.exe
 
     - name: Upload installers
       uses: actions/upload-artifact@master
