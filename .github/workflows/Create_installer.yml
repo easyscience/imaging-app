@@ -21,8 +21,7 @@ jobs:
       # 4. <MacOS 14 with arm64 arch, Release, Clang 15 compiler toolchain
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the list.
       matrix:
-        # os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
-        os: [windows-2022]
+        os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
 
     steps:
     - name: Checkout EasyImaginApp
@@ -51,10 +50,6 @@ jobs:
       shell: bash
       run: uv pip install -r imaging-app/pyproject.toml --extra ci --system
 
-    - name: Downgrade pyinstaller (MacOS)
-      if: runner.os == 'macOS'
-      run: uv pip install 'pyinstaller<6.0' --system
-
     - name: Install Qt Installer Framework
       uses: jurplel/install-qt-action@v4
       with:
@@ -64,13 +59,22 @@ jobs:
         tools: 'tools_ifw'
         no-qt-binaries: 'true'
 
+    - name: Set icon environment variable
+      shell: bash
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          echo "ICON_PATH=EasyImagingApp\Gui\Resources\Logos\App.ico" >> $GITHUB_ENV
+        else
+          echo "ICON_PATH=EasyImagingApp/Gui/Resources/Logos/App.icns" >> $GITHUB_ENV
+        fi
+
     - name: Build with pyinstaller
       working-directory: imaging-app
       shell: bash
       run: |
-        pyinstaller EasyImagingApp/main.py --onedir --windowed --name EasyImaging --icon EasyImagingApp/Gui/Resources/Logos/App.ico \
+        pyinstaller EasyImagingApp/main.py --onedir --windowed --name EasyImaging --icon $ICON_PATH \
         --clean --noconfirm  \
-        --add-data=EasyImagingApp:. --collect-all PySide6 --collect-all scitiff --collect-all easyscience --collect-all EasyApp
+        --add-data=EasyImagingApp:. --collect-submodules PySide6 --collect-all scitiff --collect-all easyscience --collect-all EasyApp
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
