@@ -118,7 +118,7 @@ jobs:
     - name: Sign the binary using keypair alias
       if: runner.os == 'windows'
       shell: cmd
-      run: smctl sign --keypair-alias key_911959544 --input imaging-app\Installer\*EasyImaging_Installer.exe
+      run: smctl sign --keypair-alias key_911959544 --input imaging-app\Installer\${{runner.os}}-${{runner.arch}}_EasyImaging_Installer.exe
 
     - name: Upload installers
       uses: actions/upload-artifact@master
