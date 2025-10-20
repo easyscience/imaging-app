@@ -21,7 +21,8 @@ jobs:
       # 4. <MacOS 14 with arm64 arch, Release, Clang 15 compiler toolchain
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the list.
       matrix:
-        os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
+        # os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
+        os: [macos-14]
 
     steps:
     - name: Checkout EasyImaginApp
@@ -72,7 +73,7 @@ jobs:
       working-directory: imaging-app
       shell: bash
       run: |
-        pyinstaller EasyImagingApp/main.py --onedir --windowed --name EasyImaging --icon $ICON_PATH \
+        pyinstaller EasyImagingApp/main.py --onedir --windowed --name EasyImaging --icon ${{ env.ICON_PATH }} \
         --clean --noconfirm  \
         --add-data=EasyImagingApp:. --collect-submodules PySide6 --collect-all scitiff --collect-all easyscience --collect-all EasyApp
 
