@@ -63,7 +63,7 @@ jobs:
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          echo "ICON_PATH=EasyImagingApp\Gui\Resources\Logos\App.ico" >> $GITHUB_ENV
+          echo "ICON_PATH=EasyImagingApp/Gui/Resources/Logos/App.ico" >> $GITHUB_ENV
         else
           echo "ICON_PATH=EasyImagingApp/Gui/Resources/Logos/App.icns" >> $GITHUB_ENV
         fi
