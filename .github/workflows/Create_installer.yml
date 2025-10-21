@@ -21,8 +21,7 @@ jobs:
       # 4. <MacOS 14 with arm64 arch, Release, Clang 15 compiler toolchain
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the list.
       matrix:
-        # os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
-        os: [macos-14]
+        os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
 
     steps:
     - name: Checkout EasyImaginApp
