@@ -88,7 +88,7 @@ jobs:
       shell: bash
       run: |
         if [ "${{ runner.os}}" == "macOS" ]; then
-          cp -r ../../dist/EasyImaging.app packages/core/data/
+          cp -r ../dist/EasyImaging.app packages/core/data/
         else
           cp -r ../dist/EasyImaging/* packages/core/data/
         fi
