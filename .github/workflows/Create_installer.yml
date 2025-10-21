@@ -87,7 +87,11 @@ jobs:
       working-directory: imaging-app/Installer
       shell: bash
       run: |
-        cp -r ../dist/EasyImaging/* packages/core/data/
+        if [ "${{ runner.os}}" == "MacOS" ]; then
+          cp -r ../../dist/EasyImaging.app packages/core/data/
+        else
+          cp -r ../dist/EasyImaging/* packages/core/data/
+        fi
 
     - name: Create installers (Windows)
       if: runner.os == 'Windows'
