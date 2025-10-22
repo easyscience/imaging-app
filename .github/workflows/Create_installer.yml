@@ -1,0 +1,134 @@
+name: Build installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build_pyinstaller:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      # Build on the following 4 configurations: 
+      # 1. <Windows, Release, 2022 MSVC compiler toolchain>
+      # 2. <Ubuntu latest, i.e. version 22.04, Release, GCC 11 compiler toolchain>
+      # 3. <MacOS 12 with x86-64 arch, Release, Clang 14 compiler toolchain>
+      # 4. <MacOS 14 with arm64 arch, Release, Clang 15 compiler toolchain
+      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the list.
+      matrix:
+        os: [windows-2022, ubuntu-22.04, macos-14, macos-15-intel]
+
+    steps:
+    - name: Checkout EasyImaginApp
+      uses: actions/checkout@v5
+      with:
+        path: imaging-app
+
+    - name: Checkout EasyApp
+      uses: actions/checkout@v5
+      with:
+        repository: EasyScience/EasyApp
+        ref: 'Fix_wrong_application_types'
+        path: EasyApp
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install uv
+      run: |
+          python -m pip install --upgrade pip
+          pip install uv
+
+    - name: Install dependencies
+      shell: bash
+      run: uv pip install -r imaging-app/pyproject.toml --extra ci --system
+
+    - name: Install Qt Installer Framework
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.9.3'
+        dir: '${{GITHUB.WORKSPACE}}'
+        install-deps: 'true'
+        tools: 'tools_ifw'
+        no-qt-binaries: 'true'
+
+    - name: Set icon environment variable
+      shell: bash
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          echo "ICON_PATH=EasyImagingApp/Gui/Resources/Logos/App.ico" >> $GITHUB_ENV
+        else
+          echo "ICON_PATH=EasyImagingApp/Gui/Resources/Logos/App.icns" >> $GITHUB_ENV
+        fi
+
+    - name: Build with pyinstaller
+      working-directory: imaging-app
+      shell: bash
+      run: |
+        pyinstaller EasyImagingApp/main.py --onedir --windowed --name EasyImaging --icon ${{ env.ICON_PATH }} \
+        --clean --noconfirm  \
+        --add-data=EasyImagingApp:. --collect-submodules PySide6 --collect-all scitiff --collect-all easyscience --collect-all EasyApp
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with: 
+        path: imaging-app/dist/EasyImaging
+        name: EasyImaging-${{ matrix.os }}
+
+    - name: Prepare creation of installer
+      working-directory: imaging-app/Installer
+      shell: bash
+      run: |
+        if [ "${{ runner.os}}" == "macOS" ]; then
+          cp -r ../dist/EasyImaging.app packages/core/data/
+        else
+          cp -r ../dist/EasyImaging/* packages/core/data/
+        fi
+
+    - name: Create installers (Windows)
+      if: runner.os == 'Windows'
+      working-directory: imaging-app\Installer
+      run: |
+        ${{env.IQTA_TOOLS}}\QtInstallerFramework\4.7\bin\binarycreator.exe -c config\config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer.exe
+
+    - name: Create installers (Linux & MacOS)
+      if: runner.os != 'Windows'
+      working-directory: imaging-app/Installer
+      run: |
+        ${{env.IQTA_TOOLS}}/QtInstallerFramework/4.7/bin/binarycreator -c config/config.xml -p packages ${{runner.os}}-${{runner.arch}}_EasyImaging_Installer
+
+    - name: Install DigiCert Client tools from Github Custom Actions marketplace
+      if: runner.os == 'windows'
+      uses: digicert/ssm-code-signing@v1.1.0
+
+    - name: Set up P12 certificate
+      if: runner.os == 'windows'
+      shell: bash
+      run: echo "${{ secrets.WINDOWS_CERT_DATA }}" | base64 --decode > /d/Certificate_pkcs12.p12
+
+    - name: Set keylocker variables
+      if: runner.os == 'windows'
+      shell: bash
+      run: |
+        echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        echo "SM_HOST=${{ secrets.KEYLOCKER_HOST }}" >> "$GITHUB_ENV"
+        echo "SM_API_KEY=${{ secrets.KEYLOCKER_API_KEY }}" >> "$GITHUB_ENV"
+        echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
+        echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.WINDOWS_CERT_PASSWORD }}" >> "$GITHUB_ENV"
+
+    - name: Sign the binary using keypair alias
+      if: runner.os == 'windows'
+      shell: cmd
+      run: smctl sign --keypair-alias key_911959544 --input imaging-app\Installer\${{runner.os}}-${{runner.arch}}_EasyImaging_Installer.exe
+
+    - name: Upload installers
+      uses: actions/upload-artifact@master
+      with:
+        name: EasyImaging-installer-${{runner.os}}-${{runner.arch}}
+        path: imaging-app/Installer/*EasyImaging_Installer*

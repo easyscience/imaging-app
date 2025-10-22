@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>EasyImaging</Name>
+    <Version>0.0.1</Version>
+    <Title>EasyImaging Installer</Title>
+    <Publisher>ESS DMSC</Publisher>
+    <InstallerWindowIcon>../../EasyImagingApp/Gui/Resources/Logos/App.png</InstallerWindowIcon>
+    <InstallerApplicationIcon>../../EasyImagingApp/Gui/Resources/Logos/App</InstallerApplicationIcon>
+    <StartMenuDir>EasyImaging</StartMenuDir>
+    <TargetDir>@ApplicationsDirUser@/EasyImaging</TargetDir>
+    <WizardStyle>Modern</WizardStyle>
+    <ControlScript>controllerscript.js</ControlScript>
+    <MaintenanceToolName>EasyImaging Maintenance Tool</MaintenanceToolName>
+</Installer>
